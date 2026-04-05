@@ -45,7 +45,7 @@ extern Settings *settings;
 class StringValueSetting : public SettingsArgvDispatcher {
 	// simple string setting
 public:
-	StringValueSetting(const char *name, const char *defaultValue, 
+	StringValueSetting(const char *name, const char *defaultValue,
 		const char *valueExpectedErrorString,
 		const char *wrongValueErrorString);
 
@@ -53,7 +53,7 @@ public:
 
 	void ValueChanged(const char *newValue);
 	const char *Value() const;
-	virtual const char *Handle(const char *const *argv);	
+	virtual const char *Handle(const char *const *argv);
 
 protected:
 	virtual void SaveSettingValue(Settings *);
@@ -69,12 +69,12 @@ class EnumeratedStringValueSetting : public StringValueSetting {
 	// string setting, values that do not match string enumeration
 	// are rejected
 public:
-	EnumeratedStringValueSetting(const char *name, const char *defaultValue, 
+	EnumeratedStringValueSetting(const char *name, const char *defaultValue,
 		const char *const *values, const char *valueExpectedErrorString,
 		const char *wrongValueErrorString);
 
 	void ValueChanged(const char *newValue);
-	virtual const char *Handle(const char *const *argv);	
+	virtual const char *Handle(const char *const *argv);
 
 protected:
 	const char *const *fValues;
@@ -85,12 +85,12 @@ class ScalarValueSetting : public SettingsArgvDispatcher {
 public:
 	ScalarValueSetting(const char *name, int32 defaultValue,
 		const char *valueExpectedErrorString, const char *wrongValueErrorString,
-		int32 min = LONG_MIN, int32 max = LONG_MAX);
+		int32 min = INT32_MIN, int32 max = INT32_MAX);
 
 	void ValueChanged(int32 newValue);
 	int32 Value() const;
 	void GetValueAsString(char *) const;
-	virtual const char *Handle(const char *const *argv);	
+	virtual const char *Handle(const char *const *argv);
 
 protected:
 	virtual void SaveSettingValue(Settings *);
@@ -110,7 +110,7 @@ class HexScalarValueSetting : public ScalarValueSetting {
 public:
 	HexScalarValueSetting(const char *name, int32 defaultValue,
 		const char *valueExpectedErrorString, const char *wrongValueErrorString,
-		int32 min = LONG_MIN, int32 max = LONG_MAX);
+		int32 min = INT32_MIN, int32 max = INT32_MAX);
 
 	void GetValueAsString(char *buffer) const;
 
@@ -125,7 +125,7 @@ public:
 
 	bool Value() const;
 	void SetValue(bool value);
-	virtual const char *Handle(const char *const *argv);	
+	virtual const char *Handle(const char *const *argv);
 
 protected:
 	virtual void SaveSettingValue(Settings *);

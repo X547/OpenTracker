@@ -104,7 +104,7 @@ OpenWithContainerWindow::OpenWithContainerWindow(BMessage *
 
 	fPoseView->SetFlags(fPoseView->Flags() | B_NAVIGABLE);
 	fPoseView->SetPoseEditing(false);
-	
+
 	// add buttons
 	rect = Bounds();
 	BRect buttonRect(rect);
@@ -127,12 +127,12 @@ OpenWithContainerWindow::OpenWithContainerWindow(BMessage *
 		buttonRect.right - fLaunchAndMakeDefaultButton->Frame().right , 0);
 	backgroundView->AddChild(fLaunchAndMakeDefaultButton);
 	fLaunchAndMakeDefaultButton->SetEnabled(false);
-	
+
 	buttonRect = fLaunchAndMakeDefaultButton->Frame();
 	buttonRect.OffsetTo(buttonRect.left - kSmallButtonWidth - 10,
 		buttonRect.top);
 	buttonRect.SetRightBottom(buttonRect.LeftTop() + kSmallButtonRect);
-	
+
 	backgroundView->AddChild(new BButton(buttonRect, "cancel",
 		"Cancel", new BMessage(kCancelButton),
 		B_FOLLOW_RIGHT | B_FOLLOW_BOTTOM));
@@ -198,7 +198,7 @@ FindOne(const BString *element, void *castToString)
 {
 	if (strcasecmp(element->String(), (const char *)castToString) == 0)
 		return element;
-	
+
 	return 0;
 }
 
@@ -207,20 +207,20 @@ static const entry_ref *
 AddOneUniqueDocumentType(const entry_ref *ref, void *castToList)
 {
 	BObjectList<BString> *list = (BObjectList<BString> *)castToList;
-	
+
 	BEntry entry(ref, true);
 		// traverse symlinks
-	
+
 	// get this documents type
 	char type[B_MIME_TYPE_LENGTH];
 	BFile file(&entry, O_RDONLY);
 	if (file.InitCheck() != B_OK)
 		return 0;
-	
+
 	BNodeInfo info(&file);
 	if (info.GetType(type) != B_OK)
 		return 0;
-	
+
 	if (list->EachElement(FindOne, &type))
 		// type already in list, bail
 		return 0;
@@ -235,7 +235,7 @@ static const BString *
 SetDefaultAppForOneType(const BString *element, void *castToEntryRef)
 {
 	const entry_ref *appRef = (const entry_ref *)castToEntryRef;
-	
+
 	// set entry as default handler for one mime string
 	BMimeType mime(element->String());
 	if (!mime.IsInstalled())
@@ -249,7 +249,7 @@ SetDefaultAppForOneType(const BString *element, void *castToEntryRef)
 	char appSignature[B_MIME_TYPE_LENGTH];
 	if (GetAppSignatureFromAttr(&appFile, appSignature) != B_OK)
 		return 0;
-	
+
 	if (mime.SetPreferredApp(appSignature) != B_OK)
 		return 0;
 
@@ -280,28 +280,28 @@ OpenWithContainerWindow::MakeDefaultAndOpen()
 	ASSERT(count == 1);
 	if (!count)
 		return;
-	
+
 	BPose *selectedAppPose = PoseView()->SelectionList()->FirstItem();
 	ASSERT(selectedAppPose);
 	if (!selectedAppPose)
 		return;
 
-	// collect all the types of all the opened documents into a list	
+	// collect all the types of all the opened documents into a list
 	BObjectList<BString> openedFileTypes(10, true);
-	EachEntryRef(EntryList(), AddOneUniqueDocumentType, &openedFileTypes, 100);	
-	
+	EachEntryRef(EntryList(), AddOneUniqueDocumentType, &openedFileTypes, 100);
+
 	// set the default application to be the selected pose for all the
 	// mime types in the list
 	openedFileTypes.EachElement(SetDefaultAppForOneType,
 		(void *)selectedAppPose->TargetModel()->EntryRef());
-	
+
 	// done setting the default application, now launch the app with the
 	// documents
 	OpenWithSelection();
 }
 
 
-void 
+void
 OpenWithContainerWindow::MessageReceived(BMessage *message)
 {
 	switch (message->what) {
@@ -309,7 +309,7 @@ OpenWithContainerWindow::MessageReceived(BMessage *message)
 			OpenWithSelection();
 			PostMessage(B_QUIT_REQUESTED);
 			return;
-			
+
 		case kOpenAndMakeDefault:
 			MakeDefaultAndOpen();
 			PostMessage(B_QUIT_REQUESTED);
@@ -342,7 +342,7 @@ OpenWithContainerWindow::KeyDownFilter(BMessage *message, BHandler **,
 }
 
 
-void 
+void
 OpenWithContainerWindow::AddShortcuts()
 {
 	// add get info here
@@ -376,7 +376,7 @@ OpenWithContainerWindow::NewAttributeMenu(BMenu *menu)
 }
 
 
-void 
+void
 OpenWithContainerWindow::SaveState(bool)
 {
 	BNode defaultingNode;
@@ -389,14 +389,14 @@ OpenWithContainerWindow::SaveState(bool)
 }
 
 
-void 
+void
 OpenWithContainerWindow::SaveState(BMessage &message) const
 {
 	_inherited::SaveState(message);
 }
 
 
-void 
+void
 OpenWithContainerWindow::Init(const BMessage *message)
 {
 	_inherited::Init(message);
@@ -425,65 +425,65 @@ OpenWithContainerWindow::RestoreState(const BMessage &message)
 }
 
 
-void 
+void
 OpenWithContainerWindow::RestoreWindowState(AttributeStreamNode *node)
 {
 	SetSizeLimits(310, 10000, 160, 10000);
 	if (!node)
 		return;
 
-	const char *rectAttributeName = kAttrWindowFrame;	
+	const char *rectAttributeName = kAttrWindowFrame;
 	BRect frame(Frame());
 	if (node->Read(rectAttributeName, 0, B_RECT_TYPE, sizeof(BRect), &frame)
-		== sizeof(BRect)) {	
+		== sizeof(BRect)) {
 		MoveTo(frame.LeftTop());
 		ResizeTo(frame.Width(), frame.Height());
 	}
 }
 
 
-void 
+void
 OpenWithContainerWindow::RestoreWindowState(const BMessage &message)
 {
 	_inherited::RestoreWindowState(message);
 }
 
 
-bool 
+bool
 OpenWithContainerWindow::NeedsDefaultStateSetup()
 {
 	return true;
 }
 
 
-void 
+void
 OpenWithContainerWindow::SetUpDefaultState()
 {
 }
 
 
-bool 
+bool
 OpenWithContainerWindow::IsShowing(const node_ref *) const
 {
 	return false;
 }
 
 
-bool 
+bool
 OpenWithContainerWindow::IsShowing(const entry_ref *) const
 {
 	return false;
 }
 
 
-void 
+void
 OpenWithContainerWindow::SetCanSetAppAsDefault(bool on)
 {
 	fLaunchAndMakeDefaultButton->SetEnabled(on);
 }
 
 
-void 
+void
 OpenWithContainerWindow::SetCanOpen(bool on)
 {
 	fLaunchButton->SetEnabled(on);
@@ -512,7 +512,7 @@ OpenWithPoseView::ContainerWindow() const
 }
 
 
-void 
+void
 OpenWithPoseView::AttachedToWindow()
 {
 	_inherited::AttachedToWindow();
@@ -521,7 +521,7 @@ OpenWithPoseView::AttachedToWindow()
 }
 
 
-bool 
+bool
 OpenWithPoseView::CanHandleDragSelection(const Model *, const BMessage *, bool)
 {
 	return false;
@@ -542,7 +542,7 @@ AddSupportingAppForTypeToQuery(SearchForSignatureEntryList *queryIterator,
 
 	for (int32 index =0; ; index++) {
 		const char *signature;
-		int32 length;
+		ssize_t length;
 
 		if (message.FindData("applications", 'CSTR', index, (const void **)&signature,
 			&length) != B_OK)
@@ -570,7 +570,7 @@ AddOneRefSignatures(const entry_ref *ref, void *castToIterator)
 
 	BString mimeType(model.MimeType());
 
-	if (!mimeType.Length() || mimeType.ICompare(B_FILE_MIMETYPE) == 0) 
+	if (!mimeType.Length() || mimeType.ICompare(B_FILE_MIMETYPE) == 0)
 		// if model is of unknown type, try mimeseting it first
 		model.Mimeset(true);
 
@@ -640,10 +640,10 @@ OpenWithPoseView::OpenSelection(BPose *pose, int32 *)
 	int32 count = fSelectionList->CountItems();
 	if (!count)
 		return;
-	
+
 	if (!pose)
 		pose = fSelectionList->FirstItem();
-	
+
 	ASSERT(pose);
 
 	BEntry entry(pose->TargetModel()->EntryRef());
@@ -675,8 +675,8 @@ OpenWithPoseView::OpenSelection(BPose *pose, int32 *)
 		}	// else - once we have an extensible sniffer, tell users to ask
 			// publishers to fix up sniffers
 	}
-		
-		
+
+
 	BMessage message(*window->EntryList());
 		// make a clone to send
 	message.RemoveName("launchUsingSelector");
@@ -688,12 +688,12 @@ OpenWithPoseView::OpenSelection(BPose *pose, int32 *)
 
 	if (fSelectionHandler)
 		fSelectionHandler->PostMessage(&message);
-		
+
 	window->PostMessage(B_QUIT_REQUESTED);
 }
 
 
-void 
+void
 OpenWithPoseView::Pulse()
 {
 	// disable the Open and make default button if the default
@@ -729,12 +729,12 @@ OpenWithPoseView::Pulse()
 	}
 
 	ASSERT(fSelectionList->CountItems() == 1);
-	
+
 	// enable the Open and make default if selected application different
 	// from preferred app ref
 	window->SetCanSetAppAsDefault((*fSelectionList->FirstItem()->
 		TargetModel()->EntryRef()) != fPreferredRef);
-	
+
 	_inherited::Pulse();
 }
 
@@ -778,9 +778,9 @@ OpenWithPoseView::CreatePoses(Model **models, PoseInfo *poseInfoArray, int32 cou
 	// overridden to try to select the preferred handling app
 	_inherited::CreatePoses(models, poseInfoArray, count, resultingPoses, insertionSort,
 		lastPoseIndexPtr, boundsPtr, forceDraw);
-	
+
 	if (resultingPoses)
-		for (int32 index = 0; index < count; index++) 
+		for (int32 index = 0; index < count; index++)
 			if (resultingPoses[index] && fHaveCommonPreferredApp
 				&& *(models[index]->EntryRef()) == fPreferredRef)
 				// this is our preferred app, select it's pose
@@ -788,7 +788,7 @@ OpenWithPoseView::CreatePoses(Model **models, PoseInfo *poseInfoArray, int32 cou
 }
 
 
-void 
+void
 OpenWithPoseView::KeyDown(const char *bytes, int32 count)
 {
 	if (bytes[0] == B_TAB)
@@ -799,14 +799,14 @@ OpenWithPoseView::KeyDown(const char *bytes, int32 count)
 }
 
 
-void 
+void
 OpenWithPoseView::SaveState(AttributeStreamNode *node)
 {
 	_inherited::SaveState(node);
 }
 
 
-void 
+void
 OpenWithPoseView::RestoreState(AttributeStreamNode *node)
 {
 	_inherited::RestoreState(node);
@@ -814,14 +814,14 @@ OpenWithPoseView::RestoreState(AttributeStreamNode *node)
 }
 
 
-void 
+void
 OpenWithPoseView::SaveState(BMessage &message) const
 {
 	_inherited::SaveState(message);
 }
 
 
-void 
+void
 OpenWithPoseView::RestoreState(const BMessage &message)
 {
 	_inherited::RestoreState(message);
@@ -829,46 +829,46 @@ OpenWithPoseView::RestoreState(const BMessage &message)
 }
 
 
-void 
+void
 OpenWithPoseView::SavePoseLocations(BRect *)
 {
 	// do nothing
 }
 
 
-void 
+void
 OpenWithPoseView::MoveSelectionToTrash(bool)
 {
 }
 
 
-void 
+void
 OpenWithPoseView::MoveSelectionTo(BPoint, BPoint, BContainerWindow *)
 {
 }
 
 
-void 
+void
 OpenWithPoseView::MoveSelectionInto(Model *, BContainerWindow *, bool, bool)
 {
 }
 
 
-bool 
+bool
 OpenWithPoseView::Represents(const node_ref *) const
 {
 	return false;
 }
 
 
-bool 
+bool
 OpenWithPoseView::Represents(const entry_ref *) const
 {
 	return false;
 }
 
 
-bool 
+bool
 OpenWithPoseView::HandleMessageDropped(BMessage *DEBUG_ONLY(message))
 {
 #if DEBUG
@@ -887,7 +887,7 @@ OpenWithPoseView::HandleMessageDropped(BMessage *DEBUG_ONLY(message))
 }
 
 
-int32 
+int32
 OpenWithPoseView::OpenWithRelation(const Model *model) const
 {
 	OpenWithContainerWindow *window = ContainerWindow();
@@ -897,7 +897,7 @@ OpenWithPoseView::OpenWithRelation(const Model *model) const
 }
 
 
-void 
+void
 OpenWithPoseView::OpenWithRelationDescription(const Model *model,
 	BString *description) const
 {
@@ -936,11 +936,11 @@ RelationCachingModelProxy::~RelationCachingModelProxy()
 	delete fModel;
 }
 
-int32 
+int32
 RelationCachingModelProxy::Relation(SearchForSignatureEntryList *iterator,
 	BMessage *entries) const
 {
-	if (relation == kUnknownRelation) 
+	if (relation == kUnknownRelation)
 		relation = iterator->Relation(entries, fModel);
 
 	return relation;
@@ -1030,13 +1030,13 @@ OpenWithMenu::StartBuildingItemList()
 	}
 
 	fSupportingAppList = new BObjectList<RelationCachingModelProxy>(20, true);
-	
+
 	//queryRetrieval = new BStopWatch("get next entry on BQuery");
 	return true;
 }
 
 
-bool 
+bool
 OpenWithMenu::AddNextItem()
 {
 	BEntry entry;
@@ -1051,14 +1051,14 @@ OpenWithMenu::AddNextItem()
 		// Tracker, filter out version that don't list the correct types,
 		// etc.
 		delete model;
-	} else 
+	} else
 		fSupportingAppList->AddItem(new RelationCachingModelProxy(model));
 
 	return true;
 }
 
 
-void 
+void
 OpenWithMenu::DoneBuildingItemList()
 {
 	// sort by app name
@@ -1118,7 +1118,7 @@ OpenWithMenu::DoneBuildingItemList()
 		// divide different relations of opening with a separator
 		int32 relation = modelProxy->Relation(fIterator, &fEntriesToOpen);
 		if (lastRelation != -1 && relation != lastRelation)
-			AddSeparatorItem();			
+			AddSeparatorItem();
 		lastRelation = relation;
 
 		ModelMenuItem *item = new ModelMenuItem(model, result.String(), message);
@@ -1144,7 +1144,7 @@ OpenWithMenu::DoneBuildingItemList()
 }
 
 
-void 
+void
 OpenWithMenu::ClearMenuBuildingState()
 {
 	delete fIterator;
@@ -1175,32 +1175,32 @@ SearchForSignatureEntryList::~SearchForSignatureEntryList()
 }
 
 
-void 
+void
 SearchForSignatureEntryList::PushUniqueSignature(const char *str)
 {
 	// do a unique add
 	if (fSignatures.EachElement(FindOne, (void *)str))
 		return;
-	
+
 	fSignatures.AddItem(new BString(str));
 }
 
 
-status_t 
+status_t
 SearchForSignatureEntryList::GetNextEntry(BEntry *entry, bool)
 {
 	return fIteratorList->GetNextEntry(entry);
 }
 
 
-status_t 
+status_t
 SearchForSignatureEntryList::GetNextRef(entry_ref *ref)
 {
 	return fIteratorList->GetNextRef(ref);
 }
 
 
-int32 
+int32
 SearchForSignatureEntryList::GetNextDirents(struct dirent *buffer,
 	size_t length, int32 count)
 {
@@ -1227,7 +1227,7 @@ AddOnePredicateTerm(const BString *item, void *castToParams)
 }
 
 
-status_t 
+status_t
 SearchForSignatureEntryList::Rewind()
 {
 	if (fIteratorList)
@@ -1242,7 +1242,7 @@ SearchForSignatureEntryList::Rewind()
 	// build the predicate string by oring queries for the individual
 	// signatures
 	BString predicateString;
-	
+
 	AddOneTermParams params;
 	params.result = &predicateString;
 	params.first = true;
@@ -1254,24 +1254,24 @@ SearchForSignatureEntryList::Rewind()
 	fIteratorList->AddItem(new TWalkerWrapper(
 		new WALKER_NS::TQueryWalker(predicateString.String())));
 	fIteratorList->AddItem(new ConditionalAllAppsIterator(this));
-	
+
 	return fIteratorList->Rewind();
 }
 
 
-int32 
+int32
 SearchForSignatureEntryList::CountEntries()
 {
 	return 0;
 }
 
 
-bool 
+bool
 SearchForSignatureEntryList::GetPreferredApp(entry_ref *ref) const
 {
 	if (fPreferredAppCount == 1)
 		*ref = fPreferredRef;
-	
+
 	return fPreferredAppCount == 1;
 }
 
@@ -1288,7 +1288,7 @@ SearchForSignatureEntryList::TrySettingPreferredApp(const entry_ref *ref)
 }
 
 
-void 
+void
 SearchForSignatureEntryList::TrySettingPreferredAppForFile(const entry_ref *ref)
 {
 	if (!fPreferredAppForFileCount) {
@@ -1301,28 +1301,28 @@ SearchForSignatureEntryList::TrySettingPreferredAppForFile(const entry_ref *ref)
 }
 
 
-void 
+void
 SearchForSignatureEntryList::NonGenericFileFound()
 {
 	fGenericFilesOnly = false;
 }
 
 
-bool 
+bool
 SearchForSignatureEntryList::GenericFilesOnly() const
 {
 	return fGenericFilesOnly;
 }
 
 
-bool 
+bool
 SearchForSignatureEntryList::ShowAllApplications() const
 {
 	return fCanAddAllApps && !fFoundOneNonSuperHandler;
 }
 
 
-int32 
+int32
 SearchForSignatureEntryList::Relation(const Model *nodeModel,
 	const Model *applicationModel)
 {
@@ -1345,7 +1345,7 @@ SearchForSignatureEntryList::Relation(const Model *nodeModel,
 }
 
 
-int32 
+int32
 SearchForSignatureEntryList::Relation(const BMessage *entriesToOpen,
 	const Model *model) const
 {
@@ -1355,7 +1355,7 @@ SearchForSignatureEntryList::Relation(const BMessage *entriesToOpen,
 }
 
 
-void 
+void
 SearchForSignatureEntryList::RelationDescription(const BMessage *entriesToOpen,
 	const Model *model, BString *description) const
 {
@@ -1365,7 +1365,7 @@ SearchForSignatureEntryList::RelationDescription(const BMessage *entriesToOpen,
 }
 
 
-int32 
+int32
 SearchForSignatureEntryList::Relation(const BMessage *entriesToOpen,
 	const Model *applicationModel, const entry_ref *preferredApp,
 	const entry_ref *preferredAppForFile)
@@ -1381,7 +1381,7 @@ SearchForSignatureEntryList::Relation(const BMessage *entriesToOpen,
 		Model model(&ref, true, true);
 		if (model.InitCheck())
 			continue;
-		
+
 		int32 result = Relation(&model, applicationModel);
 		if (result != kNoRelation) {
 			if (preferredAppForFile
@@ -1389,19 +1389,19 @@ SearchForSignatureEntryList::Relation(const BMessage *entriesToOpen,
 				return kPreferredForFile;
 
 			if (result == kSupportsType && preferredApp
-				&& *applicationModel->EntryRef() == *preferredApp) 
+				&& *applicationModel->EntryRef() == *preferredApp)
 				// application matches cached preferred app, we are done
 				return kPreferredForType;
-				
+
 			return result;
 		}
 	}
-	
+
 	return kNoRelation;
 }
 
 
-void 
+void
 SearchForSignatureEntryList::RelationDescription(const BMessage *entriesToOpen,
 	const Model *applicationModel, BString *description, const entry_ref *preferredApp,
 	const entry_ref *preferredAppForFile)
@@ -1415,11 +1415,11 @@ SearchForSignatureEntryList::RelationDescription(const BMessage *entriesToOpen,
 			*description = "Preferred for file";
 			return;
 		}
-		
+
 		Model model(&ref, true, true);
 		if (model.InitCheck())
 			continue;
-		
+
 		BMimeType mimeType;
 		int32 result = Relation(&model, applicationModel);
 		switch (result) {
@@ -1434,12 +1434,12 @@ SearchForSignatureEntryList::RelationDescription(const BMessage *entriesToOpen,
 				{
 					mimeType.SetTo(model.MimeType());
 					// status_t result = mimeType.GetSupertype(&mimeType);
-					
+
 					char *type = (char *)mimeType.Type();
 					char *tmp = strchr(type, '/');
 					if (tmp)
 						*tmp = '\0';
-						
+
 					//PRINT(("getting supertype for %s, result %s, got %s\n",
 					//	model.MimeType(), strerror(result), mimeType.Type()));
 					*description = "Handles any ";
@@ -1447,17 +1447,17 @@ SearchForSignatureEntryList::RelationDescription(const BMessage *entriesToOpen,
 					*description += type;
 					return;
 				}
-	
+
 			case kSupportsType:
 				{
 					mimeType.SetTo(model.MimeType());
-					
+
 					if (preferredApp && *applicationModel->EntryRef() == *preferredApp)
 						// application matches cached preferred app, we are done
 						*description = "Preferred for ";
 					else
 						*description = "Handles ";
-			
+
 					char shortDescription[256];
 					if (mimeType.GetShortDescription(shortDescription) == B_OK)
 						*description += shortDescription;
@@ -1467,7 +1467,7 @@ SearchForSignatureEntryList::RelationDescription(const BMessage *entriesToOpen,
 				}
 		}
 	}
-	
+
 	*description = "Does not handle file";
 }
 
@@ -1509,7 +1509,7 @@ SearchForSignatureEntryList::CanOpenWithFilter(const Model *appModel,
 			BPath path, path2;
 			BEntry entry(appModel->EntryRef());
 			entry.GetPath(&path);
-			
+
 			BEntry entry2(&trackerInfo.ref);
 			entry2.GetPath(&path2);
 
@@ -1520,7 +1520,7 @@ SearchForSignatureEntryList::CanOpenWithFilter(const Model *appModel,
 			return false;
 		}
 	}
-	
+
 	if (FSInTrashDir(appModel->EntryRef()))
 		return false;
 
@@ -1531,10 +1531,10 @@ SearchForSignatureEntryList::CanOpenWithFilter(const Model *appModel,
 		BAppFileInfo appFileInfo(dynamic_cast<BFile *>(appModel->Node()));
 		if (appFileInfo.GetAppFlags(&flags) != B_OK)
 			return false;
-		
+
 		if ((flags & B_BACKGROUND_APP) || (flags & B_ARGV_ONLY))
 			return false;
-		
+
 		if (!signature[0])
 			// weed out apps with empty signatures
 			return false;
@@ -1546,7 +1546,7 @@ SearchForSignatureEntryList::CanOpenWithFilter(const Model *appModel,
 		BPath path;
 		BEntry entry(appModel->EntryRef());
 		entry.GetPath(&path);
-		
+
 		PRINT(("filtering out %s, does not handle any of opened files\n",
 			path.Path()));
 #endif
@@ -1573,7 +1573,7 @@ ConditionalAllAppsIterator::ConditionalAllAppsIterator(
 }
 
 
-void 
+void
 ConditionalAllAppsIterator::Instantiate()
 {
 	if (fWalker)
@@ -1592,7 +1592,7 @@ ConditionalAllAppsIterator::~ConditionalAllAppsIterator()
 }
 
 
-status_t 
+status_t
 ConditionalAllAppsIterator::GetNextEntry(BEntry *entry, bool traverse)
 {
 	if (!Iterate())
@@ -1603,40 +1603,40 @@ ConditionalAllAppsIterator::GetNextEntry(BEntry *entry, bool traverse)
 }
 
 
-status_t 
+status_t
 ConditionalAllAppsIterator::GetNextRef(entry_ref *ref)
 {
 	if (!Iterate())
 		return B_ENTRY_NOT_FOUND;
-	
+
 	Instantiate();
 	return fWalker->GetNextRef(ref);
 }
 
 
-int32 
+int32
 ConditionalAllAppsIterator::GetNextDirents(struct dirent *buffer, size_t length, int32 count)
 {
 	if (!Iterate())
 		return 0;
-	
+
 	Instantiate();
 	return fWalker->GetNextDirents(buffer, length, count);
 }
 
 
-status_t 
+status_t
 ConditionalAllAppsIterator::Rewind()
 {
 	if (!Iterate())
 		return B_OK;
-	
+
 	Instantiate();
 	return fWalker->Rewind();
 }
 
 
-int32 
+int32
 ConditionalAllAppsIterator::CountEntries()
 {
 	if (!Iterate())
@@ -1647,7 +1647,7 @@ ConditionalAllAppsIterator::CountEntries()
 }
 
 
-bool 
+bool
 ConditionalAllAppsIterator::Iterate() const
 {
 	return fParent->ShowAllApplications();

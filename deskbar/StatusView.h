@@ -44,6 +44,8 @@ All rights reserved.
 #include "BarView.h"
 #include "TimeView.h"
 
+class TReplicantShelf;
+
 const float kMaxReplicantHeight = 16.0f;
 const float kMaxReplicantWidth = 16.0f;
 const int32 kMinimumReplicantCount = 6;
@@ -145,20 +147,20 @@ private:
 	void RemoveItem(int32 id);
 
 	void MoveItem(entry_ref *, ino_t toDirectory);
-#endif		
+#endif
 
 	BPoint LocForReplicant(int32 replicantCount, int32 index, float width);
 	BShelf *Shelf() const;
-	
+
 	friend class TReplicantShelf;
 
 	TTimeView *fClock;
 	TBarView *fBarView;
 	TReplicantShelf *fShelf;
-	
+
 	bool fMultiRowMode;
-	
-	bool fAlignmentSupport;		
+
+	bool fAlignmentSupport;
 #ifdef DB_ADDONS
 	BList *fItemList;
 	uint64 fDeskbarSecurityCode;
@@ -179,7 +181,7 @@ enum {
 class TDragRegion : public BControl {
 public:
 	TDragRegion(TBarView *, BView *);
-	
+
 	virtual void AttachedToWindow();
 	virtual void GetPreferredSize(float *, float *);
 	virtual void Draw(BRect);
@@ -190,10 +192,10 @@ public:
 
 	void DrawDragRegion();
 	BRect DragRegion() const;
-	
-	bool SwitchModeForRect(BPoint mouse, BRect rect, 
+
+	bool SwitchModeForRect(BPoint mouse, BRect rect,
 		bool newVertical, bool newLeft, bool newTop, int32 newState);
-	
+
 	int32 DragRegionLocation() const;
 	void SetDragRegionLocation(int32);
 

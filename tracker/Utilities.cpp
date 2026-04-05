@@ -84,7 +84,7 @@ HashString(const char *string, uint32 seed)
 {
 	char ch;
 	uint32 result = seed;
-	
+
 	while((ch = *string++) != 0) {
 		result = (result << 7) ^ (result >> 24);
 		result ^= ch;
@@ -120,7 +120,7 @@ ValidateStream(BMallocIO *stream, uint32 key, int32 version)
 	int32 test_version;
 
 	if (stream->Read(&test_key, sizeof(uint32)) <= 0
-		|| stream->Read(&test_version, sizeof(int32)) <=0) 
+		|| stream->Read(&test_version, sizeof(int32)) <=0)
 		return false;
 
 	return test_key == key && test_version == version;
@@ -146,10 +146,10 @@ DisallowMetaKeys(BTextView *textView)
 	textView->DisallowChar(B_PAGE_DOWN);
 	textView->DisallowChar(B_FUNCTION_KEY);
 }
- 
+
 }	// namespace BPrivate
 
-void 
+void
 PoseInfo::EndianSwap(void *castToThis)
 {
 	PoseInfo *self = (PoseInfo *)castToThis;
@@ -159,7 +159,7 @@ PoseInfo::EndianSwap(void *castToThis)
 	STATIC_ASSERT(sizeof(ino_t) == sizeof(int64));
 	self->fInitedDirectory = SwapInt64(self->fInitedDirectory);
 	swap_data(B_POINT_TYPE, &self->fLocation, sizeof(BPoint), B_SWAP_ALWAYS);
-	
+
 	// do a sanity check on the icon position
 	if (self->fLocation.x < -20000 || self->fLocation.x > 20000
 		|| self->fLocation.y < -20000 || self->fLocation.y > 20000) {
@@ -170,7 +170,7 @@ PoseInfo::EndianSwap(void *castToThis)
 	}
 }
 
-void 
+void
 PoseInfo::PrintToStream()
 {
 	PRINT(("%s, inode:%Lx, location %f %f\n", fInvisible ? "hidden" : "visible",
@@ -179,25 +179,25 @@ PoseInfo::PrintToStream()
 
 // #pragma mark -
 
-size_t 
+size_t
 ExtendedPoseInfo::Size() const
 {
 	return sizeof(ExtendedPoseInfo) + fNumFrames * sizeof(FrameLocation);
 }
 
-size_t 
+size_t
 ExtendedPoseInfo::Size(int32 count)
 {
 	return sizeof(ExtendedPoseInfo) + count * sizeof(FrameLocation);
 }
 
-size_t 
+size_t
 ExtendedPoseInfo::SizeWithHeadroom() const
 {
 	return sizeof(ExtendedPoseInfo) + (fNumFrames + 1) * sizeof(FrameLocation);
 }
 
-size_t 
+size_t
 ExtendedPoseInfo::SizeWithHeadroom(size_t oldSize)
 {
 	int32 count = (ssize_t)oldSize - (ssize_t)sizeof(ExtendedPoseInfo);
@@ -205,7 +205,7 @@ ExtendedPoseInfo::SizeWithHeadroom(size_t oldSize)
 		count /= sizeof(FrameLocation);
 	else
 		count = 0;
-		
+
 	return Size(count + 1);
 }
 
@@ -220,7 +220,7 @@ ExtendedPoseInfo::HasLocationForFrame(BRect frame) const
 	return false;
 }
 
-BPoint 
+BPoint
 ExtendedPoseInfo::LocationForFrame(BRect frame) const
 {
 	for (int32 index = 0; index < fNumFrames; index++)
@@ -231,7 +231,7 @@ ExtendedPoseInfo::LocationForFrame(BRect frame) const
 	return BPoint(0, 0);
 }
 
-bool 
+bool
 ExtendedPoseInfo::SetLocationForFrame(BPoint newLocation, BRect frame)
 {
 	for (int32 index = 0; index < fNumFrames; index++)
@@ -248,7 +248,7 @@ ExtendedPoseInfo::SetLocationForFrame(BPoint newLocation, BRect frame)
 	return true;
 }
 
-void 
+void
 ExtendedPoseInfo::EndianSwap(void *castToThis)
 {
 	ExtendedPoseInfo *self = (ExtendedPoseInfo *)castToThis;
@@ -257,7 +257,7 @@ ExtendedPoseInfo::EndianSwap(void *castToThis)
 
 	self->fWorkspaces = SwapUInt32(self->fWorkspaces);
 	self->fNumFrames = SwapInt32(self->fNumFrames);
-	
+
 	for (int32 index = 0; index < self->fNumFrames; index++) {
 		swap_data(B_POINT_TYPE, &self->fLocations[index].fLocation,
 			sizeof(BPoint), B_SWAP_ALWAYS);
@@ -275,7 +275,7 @@ ExtendedPoseInfo::EndianSwap(void *castToThis)
 	}
 }
 
-void 
+void
 ExtendedPoseInfo::PrintToStream()
 {
 }
@@ -360,7 +360,7 @@ namespace BPrivate {
  *	"from" is always transparent, "to" opaque.
  */
 
-void 
+void
 FadeRGBA32Horizontal(uint32 *bits, int32 width, int32 height, int32 from, int32 to)
 {
 	// check parameters
@@ -394,7 +394,7 @@ FadeRGBA32Horizontal(uint32 *bits, int32 width, int32 height, int32 from, int32 
  *	"from" is always transparent, "to" opaque.
  */
 
-void 
+void
 FadeRGBA32Vertical(uint32 *bits, int32 width, int32 height, int32 from, int32 to)
 {
 	// check parameters
@@ -451,7 +451,7 @@ DraggableIcon::DraggableIcon(BRect rect, const char *name, const char *mimeType,
 }
 
 
-void 
+void
 DraggableIcon::SetTarget(BMessenger target)
 {
 	fTarget = target;
@@ -462,7 +462,7 @@ DraggableIcon::~DraggableIcon()
 	delete fBitmap;
 }
 
-BRect 
+BRect
 DraggableIcon::PreferredRect(BPoint offset, icon_size size)
 {
 	BRect result(0, 0, size - 1, size - 1);
@@ -470,7 +470,7 @@ DraggableIcon::PreferredRect(BPoint offset, icon_size size)
 	return result;
 }
 
-void 
+void
 DraggableIcon::AttachedToWindow()
 {
 	BView *parent = Parent();
@@ -480,7 +480,7 @@ DraggableIcon::AttachedToWindow()
 	}
 }
 
-void 
+void
 DraggableIcon::MouseDown(BPoint point)
 {
 	if (!DragStarted(&fMessage))
@@ -510,7 +510,7 @@ DraggableIcon::MouseDown(BPoint point)
 	DragMessage(&fMessage, dragBitmap, B_OP_ALPHA, point, fTarget.Target(0));
 }
 
-bool 
+bool
 DraggableIcon::DragStarted(BMessage *)
 {
 	return true;
@@ -546,13 +546,13 @@ FlickerFreeStringView::~FlickerFreeStringView()
 	delete fBitmap;
 }
 
-void 
+void
 FlickerFreeStringView::Draw(BRect)
 {
 	BRect bounds(Bounds());
 	if (!fBitmap)
 		fBitmap = new OffscreenBitmap(Bounds());
-	
+
 	BView *offscreen = fBitmap->BeginUsing(bounds);
 
 	if (Parent()) {
@@ -590,7 +590,7 @@ FlickerFreeStringView::Draw(BRect)
 					loc.x = bounds.left + (2 - eInfo.left);
 					break;
 				}
-				
+
 			case B_ALIGN_CENTER:
 				{
 					float width = StringWidth(Text());
@@ -598,7 +598,7 @@ FlickerFreeStringView::Draw(BRect)
 					loc.x = center - (width/2);
 					break;
 				}
-				
+
 			case B_ALIGN_RIGHT:
 				{
 					float width = StringWidth(Text());
@@ -616,7 +616,7 @@ FlickerFreeStringView::Draw(BRect)
 	fBitmap->DoneUsing();
 }
 
-void 
+void
 FlickerFreeStringView::AttachedToWindow()
 {
 	_inherited::AttachedToWindow();
@@ -628,7 +628,7 @@ FlickerFreeStringView::AttachedToWindow()
 	SetLowColor(B_TRANSPARENT_32_BIT);
 }
 
-void 
+void
 FlickerFreeStringView::SetViewColor(rgb_color color)
 {
 	if (fViewColor != color) {
@@ -638,7 +638,7 @@ FlickerFreeStringView::SetViewColor(rgb_color color)
 	_inherited::SetViewColor(B_TRANSPARENT_32_BIT);
 }
 
-void 
+void
 FlickerFreeStringView::SetLowColor(rgb_color color)
 {
 	if (fLowColor != color) {
@@ -661,13 +661,13 @@ TitledSeparatorItem::~TitledSeparatorItem()
 {
 }
 
-void 
+void
 TitledSeparatorItem::SetEnabled(bool)
 {
 	// leave disabled
 }
 
-void 
+void
 TitledSeparatorItem::GetContentSize(float *width, float *height)
 {
 	_inherited::GetContentSize(width, height);
@@ -682,7 +682,7 @@ ShiftMenuBackgroundColor(float by)
 	return tint_color(ui_color(B_MENU_BACKGROUND_COLOR), by);
 }
 
-void 
+void
 TitledSeparatorItem::Draw()
 {
 	BRect frame(Frame());
@@ -700,21 +700,21 @@ TitledSeparatorItem::Draw()
 		frame.left += 1;
 		frame.right -= 1;
 	}
-	
+
 	float startX = frame.left;
 	float endX = frame.right;
-	
+
 	float maxStringWidth = endX - startX - (2 * kMinSeparatorStubX
 		+ 2 * kStubToStringSlotX);
 
 	// ToDo:
 	// handle case where maxStringWidth turns out negative here
-	
+
 	BString truncatedLabel(Label());
 	parent->TruncateString(&truncatedLabel, B_TRUNCATE_END, maxStringWidth);
 
 	maxStringWidth = parent->StringWidth(truncatedLabel.String());
-	
+
 	// first calculate the length of the stub part of the
 	// divider line, so we can use it for secondStartX
 	float firstEndX = ((endX - startX) - maxStringWidth) / 2 - kStubToStringSlotX;
@@ -727,7 +727,7 @@ TitledSeparatorItem::Draw()
 	firstEndX += startX;
 
 	parent->PushState();
-	
+
 	int32 y = (int32) (frame.top + (frame.bottom - frame.top) / 2);
 
 	parent->BeginLineArray(minfo.separator == 2 ? 6 : 4);
@@ -756,7 +756,7 @@ TitledSeparatorItem::Draw()
 		ShiftMenuBackgroundColor(B_DARKEN_1_TINT));
 
 	parent->EndLineArray();
-	
+
 	font_height	finfo;
 	parent->GetFontHeight(&finfo);
 
@@ -768,7 +768,7 @@ TitledSeparatorItem::Draw()
 	parent->DrawString(truncatedLabel.String());
 
 	parent->MovePenTo(loc);
-	parent->SetHighColor(ShiftMenuBackgroundColor(B_DISABLED_LABEL_TINT));	
+	parent->SetHighColor(ShiftMenuBackgroundColor(B_DISABLED_LABEL_TINT));
 	parent->DrawString(truncatedLabel.String());
 
 	parent->PopState();
@@ -786,7 +786,7 @@ ShortcutFilter::ShortcutFilter(uint32 shortcutKey, uint32 shortcutModifier,
 {
 }
 
-filter_result 
+filter_result
 ShortcutFilter::Filter(BMessage *message, BHandler **)
 {
 	if (message->what == B_KEY_DOWN) {
@@ -794,7 +794,7 @@ ShortcutFilter::Filter(BMessage *message, BHandler **)
 		uint32 rawKeyChar = 0;
 		uint8 byte = 0;
 		int32 key = 0;
-		
+
 		if (message->FindInt32("modifiers", (int32 *)&modifiers) != B_OK
 			|| message->FindInt32("raw_char", (int32 *)&rawKeyChar) != B_OK
 			|| message->FindInt8("byte", (int8 *)&byte) != B_OK
@@ -818,7 +818,7 @@ ShortcutFilter::Filter(BMessage *message, BHandler **)
 // #pragma mark -
 namespace BPrivate {
 
-void 
+void
 EmbedUniqueVolumeInfo(BMessage *message, const BVolume *volume)
 {
 	BDirectory rootDirectory;
@@ -840,9 +840,9 @@ EmbedUniqueVolumeInfo(BMessage *message, const BVolume *volume)
 status_t
 MatchArchivedVolume(BVolume *result, const BMessage *message, int32 index)
 {
-	time_t created;
+	int32 created;
 	off_t capacity;
-	
+
 	if (message->FindInt32("creationDate", index, &created) != B_OK
 		|| message->FindInt64("capacity", index, &capacity) != B_OK)
 		return B_ERROR;
@@ -927,13 +927,13 @@ StringFromStream(BString *string, BMallocIO *stream, bool endianSwap)
 	stream->Read(&length, sizeof(length));
 	if (endianSwap)
 		length = SwapInt32(length);
-		
+
 	if (length <= 0 || length > 10000) {
 		// ToDo:
 		// should fail here
 		PRINT(("problems instatiating a string, length probably wrong %d\n", length));
 		return;
-	}	
+	}
 
 	char *buffer = string->LockBuffer(length);
 	stream->Read(buffer, (size_t)length + 1);
@@ -954,7 +954,7 @@ ArchiveSize(const BString *string)
 	return string->Length() + 1 + (ssize_t)sizeof(int32);
 }
 
-int32 
+int32
 CountRefs(const BMessage *message)
 {
 	uint32 type;
@@ -986,7 +986,7 @@ EachEntryRefCommon(BMessage *message, entry_ref *(*func)(entry_ref *, void *),
 	return NULL;
 }
 
-bool 
+bool
 ContainsEntryRef(const BMessage *message, const entry_ref *ref)
 {
 	entry_ref match;
@@ -1028,7 +1028,7 @@ EachEntryRef(const BMessage *message, const entry_ref *(*func)(const entry_ref *
 		(EachEntryIteratee)func, passThru, maxCount);
 }
 
-void 
+void
 TruncateLeaf(BString *string)
 {
 	for (int32 index = string->Length(); index >= 0; index--)
@@ -1069,7 +1069,7 @@ StringToScalar(const char *text)
 
 #if B_BEOS_VERSION <= B_BEOS_VERSION_MAUI
 
-bool 
+bool
 operator==(const rgb_color &a, const rgb_color &b)
 {
 	return a.red == b.red
@@ -1078,7 +1078,7 @@ operator==(const rgb_color &a, const rgb_color &b)
 		&& a.alpha == b.alpha;
 }
 
-bool 
+bool
 operator!=(const rgb_color &a, const rgb_color &b)
 {
 	return !operator==(a, b);
@@ -1096,7 +1096,7 @@ LineBounds(BPoint where, float length, bool vertical)
 		result.bottom = result.top + length;
 	else
 		result.right = result.left + length;
-	
+
 	return result;
 }
 
@@ -1108,7 +1108,7 @@ SeparatorLine::SeparatorLine(BPoint where, float length, bool vertical, const ch
 	SetLowColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 }
 
-void 
+void
 SeparatorLine::Draw(BRect)
 {
 	BRect bounds(Bounds());
@@ -1203,11 +1203,11 @@ DeleteSubmenu(BMenuItem *submenuItem)
 {
 	if (!submenuItem)
 		return;
-	
+
 	BMenu *menu = submenuItem->Submenu();
 	if (!menu)
 		return;
-	
+
 	for (;;) {
 		BMenuItem *item = menu->RemoveItem((int32)0);
 		if (!item)
@@ -1217,14 +1217,14 @@ DeleteSubmenu(BMenuItem *submenuItem)
 	}
 }
 
-status_t 
+status_t
 GetAppSignatureFromAttr(BFile *file, char *result)
 {
 	// This call is a performance improvement that
 	// avoids using the BAppFileInfo API when retrieving the
 	// app signature -- the call is expensive because by default
 	// the resource fork is scanned to read the attribute
-	
+
 #ifdef B_APP_FILE_INFO_IS_FAST
 
 	BAppFileInfo appFileInfo(file);
@@ -1286,7 +1286,7 @@ GetFileIconFromAttr(BNode *file, BBitmap *result, icon_size size)
 	return fileInfo.GetIcon(result, size);
 }
 
-void 
+void
 PrintToStream(rgb_color color)
 {
 	printf("r:%x, g:%x, b:%x, a:%x\n",
@@ -1328,7 +1328,7 @@ EachMenuItem(const BMenu *menu, bool recursive, BMenuItem *(*func)(const BMenuIt
 				return EachMenuItem(submenu, true, func);
 		}
 	}
-	
+
 	return NULL;
 }
 
@@ -1344,12 +1344,12 @@ PositionPassingMenuItem::PositionPassingMenuItem(BMenu *menu,
 {
 }
 
-status_t 
+status_t
 PositionPassingMenuItem::Invoke(BMessage *message)
 {
 	if (!Menu())
 		return B_ERROR;
-	
+
 	if (!IsEnabled())
 		return B_ERROR;
 
@@ -1388,7 +1388,7 @@ PositionPassingMenuItem::Invoke(BMessage *message)
 	return BInvoker::Invoke(&clone);
 }
 
-bool 
+bool
 BootedInSafeMode()
 {
 	const char *safeMode = getenv("SAFEMODE");
@@ -1396,7 +1396,7 @@ BootedInSafeMode()
 }
 
 
-void 
+void
 _ThrowOnError(status_t error, const char *DEBUG_ONLY(file), int32 DEBUG_ONLY(line))
 {
 	if (error != B_OK) {
@@ -1405,7 +1405,7 @@ _ThrowOnError(status_t error, const char *DEBUG_ONLY(file), int32 DEBUG_ONLY(lin
 	}
 }
 
-void 
+void
 _ThrowIfNotSize(ssize_t size, const char *DEBUG_ONLY(file), int32 DEBUG_ONLY(line))
 {
 	if (size < B_OK) {
@@ -1414,7 +1414,7 @@ _ThrowIfNotSize(ssize_t size, const char *DEBUG_ONLY(file), int32 DEBUG_ONLY(lin
 	}
 }
 
-void 
+void
 _ThrowOnError(status_t error, const char *DEBUG_ONLY(debugString),
 	const char *DEBUG_ONLY(file), int32 DEBUG_ONLY(line))
 {

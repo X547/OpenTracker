@@ -67,7 +67,7 @@ inline bool	IsVisibleInCurrentWorkspace(const window_info *windowInfo)
 	 front visible window (the first on the list), going down through all
 	 the other visible windows, then all the hidden or non workspace
 	 visible window at the end.
-  
+
 	 layer > 2 : normal visible window.
 	 layer == 2 : reserved for the desktop window (visible also).
 	 layer < 2 : hidden (0) and non workspace visible window (1)
@@ -82,7 +82,7 @@ TTeamGroup::TTeamGroup()
 		fName(NULL),
 		fSmallIcon(NULL),
 		fLargeIcon(NULL)
-		
+
 {
 	fSig[0] = '\0';
 }
@@ -219,9 +219,9 @@ TSwitchMgr::MessageReceived(BMessage *message)
 				TTeamGroup *tinfo;
 				message->FindInt32("team", &teamID);
 				while ((tinfo = (TTeamGroup *) fGroupList.ItemAt(i)) != NULL) {
-					if (tinfo->TeamList()->HasItem((void *)teamID)) {
+					if (tinfo->TeamList()->HasItem((void *)(addr_t)teamID)) {
 						fGroupList.RemoveItem(i);
-	
+
 						if (OKToUse(tinfo)) {
 							fWindow->Redraw(i);
 							if (i <= fCurIndex) {
@@ -244,8 +244,8 @@ TSwitchMgr::MessageReceived(BMessage *message)
 				BBitmap	*smallIcon;
 				uint32 flags;
 				const char *sig;
-	
-				if (message->FindPointer("teams", (void **)&teams) != B_OK) 
+
+				if (message->FindPointer("teams", (void **)&teams) != B_OK)
 					break;
 
 				if (message->FindPointer("icon", (void **)&smallIcon) != B_OK) {
@@ -265,11 +265,11 @@ TSwitchMgr::MessageReceived(BMessage *message)
 					delete teams;
 					break;
 				}
-	
+
 				TTeamGroup *tinfo = new TTeamGroup(teams, flags, strdup(name), sig);
-				
+
 				fGroupList.AddItem(tinfo);
-				if (OKToUse(tinfo)) 
+				if (OKToUse(tinfo))
 					fWindow->Redraw(fGroupList.CountItems() - 1);
 
 				break;
@@ -277,47 +277,47 @@ TSwitchMgr::MessageReceived(BMessage *message)
 		case msg_AddTeam:
 			{
 				const char *sig = message->FindString("sig");
-				team_id team = message->FindInt32("team");			
-	
+				team_id team = message->FindInt32("team");
+
 				int32 numItems = fGroupList.CountItems();
 				for (int32 i = 0; i < numItems; i++) {
 					TTeamGroup *tinfo = (TTeamGroup *)fGroupList.ItemAt(i);
 					if (strcasecmp(tinfo->Sig(), sig) == 0) {
-						if (!(tinfo->TeamList()->HasItem((void *)team)))
-							tinfo->TeamList()->AddItem((void *)team);
+						if (!(tinfo->TeamList()->HasItem((void *)(addr_t)team)))
+							tinfo->TeamList()->AddItem((void *)(addr_t)team);
 						break;
 					}
-				}		
+				}
 				break;
 			}
 		case msg_RemoveTeam:
 			{
 				team_id team = message->FindInt32("team");
-	
+
 				int32 numItems = fGroupList.CountItems();
 				for (int32 i = 0; i < numItems; i++) {
 					TTeamGroup *tinfo = (TTeamGroup *)fGroupList.ItemAt(i);
-					if (tinfo->TeamList()->HasItem((void *)team)) {
-						tinfo->TeamList()->RemoveItem((void *)team);
+					if (tinfo->TeamList()->HasItem((void *)(addr_t)team)) {
+						tinfo->TeamList()->RemoveItem((void *)(addr_t)team);
 						break;
 					}
-				}		
+				}
 				break;
 			}
 
 		case 'TASK':
 			{
-				
+
 				// The first TASK message calls MainEntry. Subsequent ones
 				// call Process().
 				bigtime_t time;
 				message->FindInt64("when", (int64 *)&time);
-	
+
 				// The fSkipUntil stuff can be removed once the new input_server
 				// starts differentiating initial key_downs from KeyDowns generated
 				// by auto-repeat. Until then the fSkipUntil stuff helps, but it
 				// isn't perfect.
-	
+
 				if (time < fSkipUntil)
 					break;
 
@@ -332,7 +332,7 @@ TSwitchMgr::MessageReceived(BMessage *message)
 							Process((mods & B_SHIFT_KEY) == 0, (mods & B_OPTION_KEY) != 0);
 						}
 					}
-				} else 
+				} else
 					MainEntry(message);
 
 				break;
@@ -350,7 +350,7 @@ TSwitchMgr::MainEntry(BMessage *message)
 	bigtime_t keyRepeatRate;
 	get_key_repeat_delay(&keyRepeatRate);
 
-	if (keyRepeatRate < 200000) 
+	if (keyRepeatRate < 200000)
 		keyRepeatRate = 200000;
 
 	bigtime_t timeout = system_time() + keyRepeatRate;
@@ -388,7 +388,7 @@ TSwitchMgr::Stop(bool do_action, uint32 )
 	fWindow->Hide();
 	if (do_action)
 		ActivateApp(true, true);
-	
+
 	release_sem(fMainMonitor);
 }
 
@@ -399,7 +399,7 @@ TSwitchMgr::FindTeam(team_id teamID, int32 *index)
 	int i = 0;
 	TTeamGroup	*tinfo;
 	while ((tinfo = (TTeamGroup *)fGroupList.ItemAt(i)) != NULL) {
-		if (tinfo->TeamList()->HasItem((void*) teamID)) {
+		if (tinfo->TeamList()->HasItem((void*)(addr_t) teamID)) {
 			*index = i;
 			return tinfo;
 		}
@@ -463,12 +463,12 @@ TSwitchMgr::QuickSwitch(BMessage *message)
 
 	team_id team;
 	if (message->FindInt32("team", &team) == B_OK) {
-	
+
 		bool forward = ((modifiers & B_SHIFT_KEY) == 0);
-	
-		if ((modifiers & B_OPTION_KEY) != 0) 
+
+		if ((modifiers & B_OPTION_KEY) != 0)
 			SwitchWindow(team, forward, true);
-		else 
+		else
 			CycleApp(forward, true);
 	}
 
@@ -530,14 +530,14 @@ TSwitchMgr::CycleApp(bool forward, bool activateNow)
 	for (;;) {
 		if (forward) {
 			fCurIndex++;
-			if (fCurIndex >= max) 
+			if (fCurIndex >= max)
 				fCurIndex = 0;
 		} else {
 			fCurIndex--;
-			if (fCurIndex < 0) 
+			if (fCurIndex < 0)
 				fCurIndex = max - 1;
 		}
-		if ((fCurIndex == startIndex)) 
+		if ((fCurIndex == startIndex))
 			// we've gone completely through the list without finding
 			// an good app. Oh well.
 			return;
@@ -549,7 +549,7 @@ TSwitchMgr::CycleApp(bool forward, bool activateNow)
 		// if we're here then we found a good one
 		SwitchToApp(startIndex, fCurIndex, forward);
 
-		if (!activateNow) 
+		if (!activateNow)
 			break;
 
 		if (ActivateApp(false, false))
@@ -601,7 +601,7 @@ TSwitchMgr::ActivateApp(bool forceShow, bool allowWorkspaceSwitch)
 		if (!windowInfo)
 			return false;
 	}
-	
+
 	int32 currentWorkspace = current_workspace();
 	TTeamGroup *teamGroup = (TTeamGroup *) fGroupList.ItemAt(fCurIndex);
 	// Let's handle the easy case first: There's only 1 team in the group
@@ -610,7 +610,7 @@ TSwitchMgr::ActivateApp(bool forceShow, bool allowWorkspaceSwitch)
 		if (forceShow && (fCurWindow != 0 || windowInfo->is_mini))
 			do_window_action(windowInfo->id, B_BRING_TO_FRONT,
 				BRect(0, 0, 0, 0), false);
-		
+
 		if (!forceShow && windowInfo->is_mini)
 			// we aren't unhiding minimized windows, so we can't do
 			// anything here
@@ -621,9 +621,9 @@ TSwitchMgr::ActivateApp(bool forceShow, bool allowWorkspaceSwitch)
 			result = false;
 		else {
 			result = true;
-			be_roster->ActivateApp((team_id) teamGroup->TeamList()->ItemAt(0));
+			be_roster->ActivateApp((team_id)(addr_t) teamGroup->TeamList()->ItemAt(0));
 		}
-		
+
 		ASSERT(windowInfo);
 		free(windowInfo);
 		return result;
@@ -634,7 +634,7 @@ TSwitchMgr::ActivateApp(bool forceShow, bool allowWorkspaceSwitch)
 	// which workspace we're going to. Then, once that is determined we
 	// want to bring to the front every window of the group of teams that
 	// lives in that workspace.
-	
+
 	if ((windowInfo->workspaces & (1 << currentWorkspace)) == 0) {
 		if (!allowWorkspaceSwitch) {
 			// If the first window in the list isn't in current workspace,
@@ -670,7 +670,7 @@ TSwitchMgr::ActivateApp(bool forceShow, bool allowWorkspaceSwitch)
 	// As we hit member teams we build the "activate" list.
 	for (int32 i = 0; i < tokenCount; i++) {
 		window_info	*matchWindowInfo = get_window_info(tokens[i]);
-		if (!matchWindowInfo) 
+		if (!matchWindowInfo)
 			// That window probably closed. Just go to the next one.
 			continue;
 		if (!IsVisibleInCurrentWorkspace(matchWindowInfo)) {
@@ -679,8 +679,8 @@ TSwitchMgr::ActivateApp(bool forceShow, bool allowWorkspaceSwitch)
 			break;
 		}
 		if ((matchWindowInfo->id != windowInfo->id)
-			&& teamGroup->TeamList()->HasItem((void *)matchWindowInfo->team))
-				windowsToActivate.AddItem((void *)matchWindowInfo->id);
+			&& teamGroup->TeamList()->HasItem((void *)(addr_t)matchWindowInfo->team))
+				windowsToActivate.AddItem((void *)(addr_t)matchWindowInfo->id);
 
 		free(matchWindowInfo);
 	}
@@ -691,7 +691,7 @@ TSwitchMgr::ActivateApp(bool forceShow, bool allowWorkspaceSwitch)
 	// order.
 	int32 i = windowsToActivate.CountItems() - 1;
 	for (; i >= 0; i--) {
-		int32 wid = (int32) windowsToActivate.ItemAt(i);
+		int32 wid = (int32)(addr_t) windowsToActivate.ItemAt(i);
 		do_window_action(wid, B_BRING_TO_FRONT, BRect(0, 0, 0, 0), false);
 	}
 
@@ -710,12 +710,12 @@ TSwitchMgr::WindowInfo(int32 groupIndex, int32 windowIndex)
 	TTeamGroup *teamGroup = (TTeamGroup *) fGroupList.ItemAt(groupIndex);
 	if (!teamGroup)
 		return NULL;
-	
+
 	int32 tokenCount;
 	int32 *tokens = get_token_list(-1, &tokenCount);
 	if (!tokens)
 		return NULL;
-	
+
 	int32 matches = 0;
 
 	// Want to find the "windowIndex'th" window in window order that belongs
@@ -729,7 +729,7 @@ TSwitchMgr::WindowInfo(int32 groupIndex, int32 windowIndex)
 		if (windowInfo) {
 			// skip hidden/special windows
 			if (IsWindowOK(windowInfo)
-				&& (teamGroup->TeamList()->HasItem((void *)windowInfo->team))) {
+				&& (teamGroup->TeamList()->HasItem((void *)(addr_t)windowInfo->team))) {
 				// this window belongs to the team!
 				if (matches == windowIndex) {
 					// we found it!
@@ -755,14 +755,14 @@ TSwitchMgr::CountWindows(int32 groupIndex, bool )
 	TTeamGroup *teamGroup = (TTeamGroup *)fGroupList.ItemAt(groupIndex);
 	if (!teamGroup)
 		return 0;
-	
+
 	int32 result = 0;
 
 	for (int32 i = 0; ; i++) {
-		team_id	teamID = (team_id)teamGroup->TeamList()->ItemAt(i);
+		team_id	teamID = (team_id)(addr_t)teamGroup->TeamList()->ItemAt(i);
 		if (teamID == 0)
 			break;
-	
+
 		int32 count;
 		int32 *tokens = get_token_list(teamID, &count);
 		if (!tokens)
@@ -809,9 +809,9 @@ TSwitchMgr::SwitchWindow(team_id team, bool, bool activate)
 		window_info	*windowInfo;
 		windowInfo = get_window_info(tokens[i]);
 		if (windowInfo && IsVisibleInCurrentWorkspace(windowInfo)
-			&& teamGroup->TeamList()->HasItem((void *)windowInfo->team)) {
+			&& teamGroup->TeamList()->HasItem((void *)(addr_t)windowInfo->team)) {
 				fWindowID = windowInfo->id;
-				if (activate) 
+				if (activate)
 					ActivateWindow(windowInfo->id);
 
 				free(windowInfo);
@@ -902,7 +902,7 @@ TBox::MouseDown(BPoint where)
 {
 	if (!fLeftScroller && !fRightScroller && !fUpScroller && !fDownScroller)
 		return;
-	
+
 	BRect frame = fIconView->Frame();
 	BRect bounds = Bounds();
 
@@ -916,7 +916,7 @@ TBox::MouseDown(BPoint where)
 			if (newSlot < 0)
 				newSlot = 0;
 			int32 newIndex = fIconView->IndexAt(newSlot);
-			
+
 			fMgr->SwitchToApp(previousIndex, newIndex, false);
 		}
 	}
@@ -929,7 +929,7 @@ TBox::MouseDown(BPoint where)
 			int32 previousSlot = fMgr->CurSlot();
 			int32 newSlot = previousSlot + (kNumSlots-1);
 			int32 newIndex = fIconView->IndexAt(newSlot);
-			
+
 			if (newIndex < 0) {
 				// don't have a page full to scroll
 				int32 valid = fMgr->CountVisibleGroups();
@@ -953,7 +953,7 @@ TBox::MouseDown(BPoint where)
 		BRect hit1(frame.left - 10, (frame.top+frame.bottom) / 2, frame.left, frame.bottom);
 		BRect hit2(frame.right, (frame.top+frame.bottom) / 2, frame.right + 10, frame.bottom);
 		if (hit1.Contains(where) || hit2.Contains(where)) {
-			// Want to scroll down 1 window 
+			// Want to scroll down 1 window
 			fMgr->CycleWindow(true, false);
 		}
 	}
@@ -1142,7 +1142,7 @@ TBox::DrawWindowScrollers(bool force)
 
 	int32 groupIndex = fMgr->CurIndex();
 	int32 maxIndex = fMgr->CountWindows(groupIndex) - 1;
-	
+
 	BRect lastFrame(0, 0, 0, 0);
 	if (maxIndex >= 0) {
 		lastFrame = fWindow->WindowView()->FrameOf(maxIndex);
@@ -1244,7 +1244,7 @@ TSwitcherWindow::DispatchMessage(BMessage *message, BHandler *handler)
 			return;
 		}
 		fMgr->Touch();
-	} else if (message->what == B_KEY_UP) 
+	} else if (message->what == B_KEY_UP)
 		fMgr->Touch(true);
 
 	BWindow::DispatchMessage(message, handler);
@@ -1284,16 +1284,16 @@ TSwitcherWindow::DoKey(uint32 key, uint32 modifiers)
 	bool forward = ((modifiers & B_SHIFT_KEY) == 0);
 
 	switch (key) {
-		case '~': 
+		case '~':
 			fMgr->CycleWindow(false, false);
 			break;
 
-		case '`': 
+		case '`':
 			fMgr->CycleWindow(true, false);
 			break;
 
 #if _ALLOW_STICKY_
-		case 's': 
+		case 's':
 		case 'S':
 			if (fHairTrigger) {
 				SetLook(B_TITLED_WINDOW_LOOK);
@@ -1304,32 +1304,32 @@ TSwitcherWindow::DoKey(uint32 key, uint32 modifiers)
 			}
 			break;
 #endif
-		case B_RIGHT_ARROW: 
+		case B_RIGHT_ARROW:
 			fMgr->CycleApp(true, false);
 			break;
 
-		case B_LEFT_ARROW: 
+		case B_LEFT_ARROW:
 			fMgr->CycleApp(false, false);
 			break;
 
-		case B_UP_ARROW: 
+		case B_UP_ARROW:
 			fMgr->CycleWindow(false, false);
 			break;
 
-		case B_DOWN_ARROW: 
+		case B_DOWN_ARROW:
 			fMgr->CycleWindow(true, false);
 			break;
 
-		case B_TAB: 
+		case B_TAB:
 			fMgr->CycleApp(forward, false);
 			break;
 
-		case B_ESCAPE: 
+		case B_ESCAPE:
 			fMgr->Stop(false, 0);
 			break;
 
 		case B_SPACE:
-		case B_ENTER: 
+		case B_ENTER:
 			fMgr->Stop(true, modifiers);
 			break;
 
@@ -1358,9 +1358,9 @@ void
 TSwitcherWindow::Update(int32 prev, int32 cur, int32 previousSlot,
 	int32 currentSlot, bool forward)
 {
-	if (!IsHidden()) 
+	if (!IsHidden())
 		fIconView->Update(prev, cur, previousSlot, currentSlot, forward);
-	else 
+	else
 		fIconView->CenterOn(cur);
 
 	fWindowView->UpdateGroup(cur, 0);
@@ -1421,7 +1421,7 @@ TIconView::TIconView(BRect frame, TSwitchMgr *mgr, TSwitcherWindow *switcherWind
 
 	fCurSmall = new BBitmap(BRect(0, 0, 15, 15), B_COLOR_8_BIT);
 	fCurLarge = new BBitmap(BRect(0, 0, 31, 31), B_COLOR_8_BIT);
-	
+
 	SetViewColor(184, 184, 184);
 	SetLowColor(184, 184, 184);
 }
@@ -1511,7 +1511,7 @@ TIconView::Update(int32, int32 cur, int32 previousSlot, int32 currentSlot,
 {
 	// Animate the shrinking of the currently centered icon.
 	AnimateIcon(fCurLarge, fCurSmall);
-	
+
 	int32 nslots = abs(previousSlot - currentSlot);
 	int32 stepSize = kScrollStep;
 
@@ -1566,17 +1566,17 @@ TIconView::ItemAtPoint(BPoint point) const
 		return -1;
 
 	int32 pointVerticalIndex = (int32)tmpPointVerticalIndex;
-	
+
 	for (int32 i = 0, verticalIndex = 0; ; i++) {
 
 		TTeamGroup *teamGroup = (TTeamGroup *)fMgr->GroupList()->ItemAt(i);
 		if (teamGroup == NULL)
 			break;
-		
+
 		if (!OKToUse(teamGroup))
 			continue;
 
-		if (verticalIndex == pointVerticalIndex) 
+		if (verticalIndex == pointVerticalIndex)
 			return i;
 
 		verticalIndex++;
@@ -1624,7 +1624,7 @@ TIconView::SlotOf(int32 index) const
 
 
 BRect
-TIconView::FrameOf(int32 index) const 
+TIconView::FrameOf(int32 index) const
 {
 	BList *list = fMgr->GroupList();
 	int32 visi = kCenterSlot - 1;
@@ -1662,10 +1662,10 @@ TIconView::DrawTeams(BRect update)
 
 		if (rect.Intersects(update) && teamGroup) {
 			SetDrawingMode(B_OP_OVER);
-			
+
 			teamGroup->Draw(this, rect, !fAutoScrolling && (i == mainIndex));
 
-			if (i == mainIndex) 
+			if (i == mainIndex)
 				CacheIcons(teamGroup);
 
 			SetDrawingMode(B_OP_COPY);
@@ -1703,7 +1703,7 @@ TIconView::Pulse()
 		fMgr->Stop(true, modifiersKeys);
 		return;
 	}
-	
+
 	if (!fSwitcher->HairTrigger()) {
 		uint32 buttons;
 		BPoint point;
@@ -1789,7 +1789,7 @@ TWindowView::ShowIndex(int32 newIndex)
 	// convert index to scroll location
 	BPoint point(0, newIndex * fItemHeight);
 	BRect bounds = Bounds();
-	
+
 	int32 groupIndex = fMgr->CurIndex();
 	TTeamGroup *teamGroup = (TTeamGroup *)fMgr->GroupList()->ItemAt(groupIndex);
 	if (!teamGroup)
@@ -1828,7 +1828,7 @@ TWindowView::Draw(BRect update)
 	TTeamGroup *teamGroup = (TTeamGroup *) fMgr->GroupList()->ItemAt(groupIndex);
 	if (!teamGroup)
 		return;
-	
+
 	BRect bounds = Bounds();
 	int32 windowIndex = (int32) (bounds.top / fItemHeight);
 	BRect windowRect = bounds;
@@ -1842,7 +1842,7 @@ TWindowView::Draw(BRect update)
 			windowRect.OffsetBy(0, fItemHeight);
 			continue;
 		}
-		
+
 
 		bool local = true;					// is window in cur workspace?
 		bool minimized = false;
@@ -1850,19 +1850,19 @@ TWindowView::Draw(BRect update)
 
 		window_info	*windowInfo = fMgr->WindowInfo(groupIndex, windowIndex);
 		if (windowInfo != NULL) {
-			
+
 			if (SmartStrcmp(windowInfo->name, teamGroup->Name()) != 0)
 				title << teamGroup->Name() << ": " << windowInfo->name;
-			else 
+			else
 				title = teamGroup->Name();
-			
+
 			int32 currentWorkspace = current_workspace();
 			if ((windowInfo->workspaces & (1 << currentWorkspace)) == 0)
 				local = false;
 
 			minimized = windowInfo->is_mini;
 			free(windowInfo);
-		} else 
+		} else
 			title = teamGroup->Name();
 
 		if (!title.Length())
@@ -1950,7 +1950,7 @@ bool
 IsWindowOK(const window_info *windowInfo)
 {
 	// is_mini (true means that the window is minimized).
-	// if not, then 
+	// if not, then
 	// show_hide >= 1 means that the window is hidden.
 	//
 	// If the window is both minimized and hidden, then you get :
@@ -1963,7 +1963,7 @@ IsWindowOK(const window_info *windowInfo)
 
 	if (windowInfo->is_mini)
 		return true;
-	
+
 	return windowInfo->show_hide_level <= 0;
 }
 
@@ -1991,7 +1991,7 @@ SmartStrcmp(const char *s1, const char *s2)
 {
 	if (strcasecmp(s1, s2) == 0)
 		return 0;
-		
+
 	// if the strings on differ in spaces or underscores they still match
 	while (*s1 && *s2) {
 		if ((*s1 == ' ') || (*s1 == '_')) {

@@ -45,6 +45,7 @@ All rights reserved.
 #include "Utilities.h"
 
 class BMenuField;
+class BFilePanel;
 
 namespace BPrivate {
 
@@ -78,7 +79,7 @@ class TrackingView : public BControl {
 		BFont fFont;
 };
 
-class AttributeView : public BView {	
+class AttributeView : public BView {
 	public:
 		AttributeView(BRect, Model *);
 		~AttributeView();
@@ -178,7 +179,7 @@ class BInfoWindow : public BWindow {
 
 	private:
 		static BRect InfoWindowRect(bool displayingSymlink);
-		static int32 CalcSize(void *); 
+		static int32 CalcSize(void *);
 
 		Model *fModel;
 		volatile bool fStopCalc;

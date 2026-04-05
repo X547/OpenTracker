@@ -37,6 +37,7 @@ All rights reserved.
 
 #include <Entry.h>
 #include <Message.h>
+#include <Messenger.h>
 #include <MessageFilter.h>
 
 #include <Entry.h>
@@ -173,8 +174,8 @@ public:
 			p1(p1)
 		{
 		}
-	
-			
+
+
 	virtual void operator()()
 		{ (function)(p1.Pass()); }
 
@@ -191,10 +192,10 @@ public:
 			p1(p1)
 		{
 		}
-	
-			
+
+
 	virtual void operator()()
-		{ result = (function)(p1.Pass()); }
+		{ this->result = (function)(p1.Pass()); }
 
 private:
 	Result (*function)(Param1);
@@ -233,8 +234,8 @@ public:
 			p3(p3)
 		{
 		}
-	
-			
+
+
 	virtual void operator()()
 		{ (function)(p1.Pass(), p2.Pass(), p3.Pass()); }
 
@@ -256,9 +257,9 @@ public:
 			p3(p3)
 		{
 		}
-			
+
 	virtual void operator()()
-		{ result = (function)(p1.Pass(), p2.Pass(), p3.Pass()); }
+		{ this->result = (function)(p1.Pass(), p2.Pass(), p3.Pass()); }
 
 private:
 	Result (*function)(Param1, Param2, Param3);
@@ -279,7 +280,7 @@ public:
 			p4(p4)
 		{
 		}
-			
+
 	virtual void operator()()
 		{ (function)(p1.Pass(), p2.Pass(), p3.Pass(), p4.Pass()); }
 
@@ -303,9 +304,9 @@ public:
 			p4(p4)
 		{
 		}
-			
+
 	virtual void operator()()
-		{ result = (function)(p1.Pass(), p2.Pass(), p3.Pass(), p4.Pass()); }
+		{ this->result = (function)(p1.Pass(), p2.Pass(), p3.Pass(), p4.Pass()); }
 
 private:
 	Result (*function)(Param1, Param2, Param3, Param4);
@@ -365,7 +366,7 @@ public:
 		}
 
 	virtual void operator()()
-		{ result = (target->*function)(); }
+		{ this->result = (target->*function)(); }
 
 
 private:
@@ -428,7 +429,7 @@ public:
 		}
 
 	virtual void operator()()
-		{ result = (target->*function)(p1.Pass()); }
+		{ this->result = (target->*function)(p1.Pass()); }
 
 protected:
 	R (T::*function)(Param1);
@@ -449,7 +450,7 @@ public:
 		}
 
 	virtual void operator()()
-		{ result = (target->*function)(p1.Pass(), p2.Pass()); }
+		{ this->result = (target->*function)(p1.Pass(), p2.Pass()); }
 
 protected:
 	R (T::*function)(Param1, Param2);

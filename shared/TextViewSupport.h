@@ -61,6 +61,9 @@ All rights reserved.
 // not be modified
 
 
+namespace BPrivate {
+
+
 struct _width_table_ {
 #if B_BEOS_VERSION_DANO
 	BFont font;				// corresponding font
@@ -70,31 +73,33 @@ struct _width_table_ {
 #endif
 	int32 hashCount;		// number of hashed items
 	int32 tableCount;		// size of table
-	void *widths;			// width table	
+	void *widths;			// width table
 };
-	
-	
+
+
 template<class T> class _BTextViewSupportBuffer_ {
 public:
 	_BTextViewSupportBuffer_(int32, int32);
 	virtual ~_BTextViewSupportBuffer_();
-					
-protected:
-	int32 mExtraCount;	
-	int32 mItemCount;	
-	int32 mBufferCount;	
-	T *mBuffer;		
-};	
 
-class _BWidthBuffer_ : public _BTextViewSupportBuffer_<_width_table_> {
+protected:
+	int32 mExtraCount;
+	int32 mItemCount;
+	int32 mBufferCount;
+	T *mBuffer;
+};
+
+class WidthBuffer : public _BTextViewSupportBuffer_<_width_table_> {
 public:
-	_BWidthBuffer_();
-	virtual ~_BWidthBuffer_();
+	WidthBuffer();
+	virtual ~WidthBuffer();
 
 	float StringWidth(const char *inText, int32 fromOffset, int32 length,
 		const BFont *inStyle);
 };
 
+
+}
 
 
 #endif /* _TEXTVIEWSUPPORT_H */

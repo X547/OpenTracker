@@ -109,7 +109,7 @@ TemplatesMenu::BuildMenu(bool addItems)
 	fOpenItem = NULL;
 	int32 count = CountItems();
 	while (count--)
-		delete RemoveItem(0L);
+		delete RemoveItem((int32)0);
 
 	// Add the Folder
 	IconMenuItem *menuItem = new IconMenuItem("New Folder", new BMessage(kNewFolder),
@@ -122,9 +122,9 @@ TemplatesMenu::BuildMenu(bool addItems)
 	find_directory (B_USER_SETTINGS_DIRECTORY, &path, true);
 	path.Append(kTemplatesDirectory);
 	mkdir(path.Path(), 0777);
-	
+
 	count = 0;
-	
+
 	BEntry entry;
 	BDirectory templatesDir(path.Path());
 	while (templatesDir.GetNextEntry(&entry) == B_OK) {
@@ -135,47 +135,47 @@ TemplatesMenu::BuildMenu(bool addItems)
 		if (nodeInfo.InitCheck() == B_OK) {
 			char mimeType[B_MIME_TYPE_LENGTH];
 			nodeInfo.GetType(mimeType);
-			
+
 			BMimeType mime(mimeType);
 			if (mime.IsValid()) {
-			
+
 				if (count == 0)
 					AddSeparatorItem();
-				
+
 				count++;
-				
+
 				// If not adding items, we are just seeing if there
 				// are any to list.  So if we find one, immediately
 				// bail and return the result.
 				if (!addItems)
 					break;
-					
+
 				entry_ref ref;
 				entry.GetRef(&ref);
-	
+
 				BMessage *message = new BMessage(kNewEntryFromTemplate);
 				message->AddRef("refs_template", &ref);
 				message->AddString("name", fileName);
 				AddItem(new IconMenuItem(fileName, message, &nodeInfo, B_MINI_ICON));
 			}
-			
+
 		}
 	}
-	
+
 	AddSeparatorItem();
-	
+
 	// This is the message sent to open the templates folder.
 	BMessage *message = new BMessage(B_REFS_RECEIVED);
 	entry_ref dirRef;
 	if (templatesDir.GetEntry(&entry) == B_OK)
 		entry.GetRef(&dirRef);
 	message->AddRef("refs", &dirRef);
-	
+
 	// Add item to show templates folder.
 	fOpenItem = new BMenuItem(kOpenTemplatesMenuName, message);
 	AddItem(fOpenItem);
 	if (dirRef == entry_ref())
 		fOpenItem->SetEnabled(false);
-	
+
 	return count > 0;
 }

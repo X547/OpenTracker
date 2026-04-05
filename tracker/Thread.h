@@ -48,7 +48,7 @@ class SimpleThread {
 public:
 	SimpleThread(int32 priority = B_LOW_PRIORITY, const char *name = 0);
 	virtual ~SimpleThread();
-	
+
 	void Go();
 
 private:
@@ -99,8 +99,8 @@ public:
 			fParam1(param1)
 		{
 		}
-	
-			
+
+
 	virtual void operator()()
 		{ (fFunction)(fParam1); }
 
@@ -119,8 +119,8 @@ public:
 			fOnThis(onThis)
 		{
 		}
-	
-			
+
+
 	virtual void operator()()
 		{ (fOnThis->*fFunction)(); }
 
@@ -141,7 +141,7 @@ public:
 			fParam2(param2)
 		{
 		}
-			
+
 	virtual void operator()()
 		{ (function)(fParam1, fParam2); }
 
@@ -164,7 +164,7 @@ public:
 			fParam3(param3)
 		{
 		}
-			
+
 	virtual void operator()()
 		{ (function)(fParam1, fParam2, fParam3); }
 
@@ -189,7 +189,7 @@ public:
 			fParam4(param4)
 		{
 		}
-			
+
 	virtual void operator()()
 		{ (function)(fParam1, fParam2, fParam3, fParam4); }
 
@@ -204,7 +204,7 @@ private:
 };
 
 template<class Param1>
-void 
+void
 LaunchInNewThread(const char *name, int32 priority, status_t (*func)(Param1), Param1 p1)
 {
 	Thread::Launch(new SingleParamFunctionObjectWorkaround<Param1>(func, p1),
@@ -212,15 +212,15 @@ LaunchInNewThread(const char *name, int32 priority, status_t (*func)(Param1), Pa
 }
 
 template<class T>
-void 
+void
 LaunchInNewThread(const char *name, int32 priority, status_t (T::*function)(), T *onThis)
 {
-	Thread::Launch(new SimpleMemberFunctionObjectWorkaround<T>(func, onThis),
+	Thread::Launch(new SimpleMemberFunctionObjectWorkaround<T>(function, onThis),
 		priority, name);
 }
 
 template<class Param1, class Param2>
-void 
+void
 LaunchInNewThread(const char *name, int32 priority,
 	status_t (*func)(Param1, Param2),
 	Param1 p1, Param2 p2)
@@ -230,7 +230,7 @@ LaunchInNewThread(const char *name, int32 priority,
 }
 
 template<class Param1, class Param2, class Param3>
-void 
+void
 LaunchInNewThread(const char *name, int32 priority,
 	status_t (*func)(Param1, Param2, Param3),
 	Param1 p1, Param2 p2, Param3 p3)
@@ -240,7 +240,7 @@ LaunchInNewThread(const char *name, int32 priority,
 }
 
 template<class Param1, class Param2, class Param3, class Param4>
-void 
+void
 LaunchInNewThread(const char *name, int32 priority,
 	status_t (*func)(Param1, Param2, Param3, Param4),
 	Param1 p1, Param2 p2, Param3 p3, Param4 p4)
@@ -260,13 +260,13 @@ protected:
 		void (View::*)(BPoint, uint32), bigtime_t pressingPeriod);
 
 	virtual ~MouseDownThread();
-	
+
 	void Go();
 	virtual void Track();
-	
+
 	static status_t TrackBinder(void *);
 private:
-	
+
 	BMessenger fOwner;
 	void (View::*fDonePressing)(BPoint);
 	void (View::*fPressing)(BPoint, uint32);
@@ -309,19 +309,19 @@ MouseDownThread<View>::~MouseDownThread()
 
 
 template<class View>
-void 
+void
 MouseDownThread<View>::Go()
 {
 	fThreadID = spawn_thread(&MouseDownThread::TrackBinder, "MouseTrackingThread",
 		B_NORMAL_PRIORITY, this);
-	
+
 	if (fThreadID <= 0 || resume_thread(fThreadID) != B_OK)
 		// didn't start, don't leak self
 		delete this;
 }
 
 template<class View>
-status_t 
+status_t
 MouseDownThread<View>::TrackBinder(void *castToThis)
 {
 	MouseDownThread *self = static_cast<MouseDownThread *>(castToThis);
@@ -332,7 +332,7 @@ MouseDownThread<View>::TrackBinder(void *castToThis)
 }
 
 template<class View>
-void 
+void
 MouseDownThread<View>::Track()
 {
 	for (;;) {
@@ -354,11 +354,11 @@ MouseDownThread<View>::Track()
 		}
 		if (fPressing)
 			(view->*fPressing)(location, buttons);
-		
+
 		lock.Unlock();
 		snooze(fPressingPeriod);
 	}
-	
+
 	delete this;
 	ASSERT(!"should not be here");
 }

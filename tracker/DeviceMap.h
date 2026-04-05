@@ -62,7 +62,7 @@ All rights reserved.
 #if _INCLUDES_CLASS_DEVICE_MAP
 #define _DEVICE_MAP_ONLY(x) x
 #else
-#define _DEVICE_MAP_ONLY(x) 
+#define _DEVICE_MAP_ONLY(x)
 #endif
 
 #include "DeviceMapGlue.h"
@@ -72,12 +72,13 @@ All rights reserved.
 #include <Node.h>
 #include <OS.h>
 
+class BWindow;
 class BBitmap;
 
 enum {
-	P_UNKNOWN = 0, 
-	P_UNREADABLE, 
-	P_ADD_ON, 
+	P_UNKNOWN = 0,
+	P_UNREADABLE,
+	P_ADD_ON,
 	P_AUDIO
 };
 
@@ -118,12 +119,12 @@ struct InitializeControlBlock {
 
 class Partition {
 public:
-	Partition(Session *, const char *name, const char *type, 
-		const char *fsShortName, const char *fsLongName, 
+	Partition(Session *, const char *name, const char *type,
+		const char *fsShortName, const char *fsLongName,
 		const char *volumeName, const char *mountedAt,
-		uint32 logicalBlockSize, uint64 offset, uint64 blocks, 
+		uint32 logicalBlockSize, uint64 offset, uint64 blocks,
 		bool hidden = false);
-	Partition(Session *, uint32 logicalBlockSize, uint64 offset, 
+	Partition(Session *, uint32 logicalBlockSize, uint64 offset,
 		uint64 blocks, bool hidden = false);
 	Partition(Session *, const partition_data &);
 
@@ -146,7 +147,7 @@ public:
 
 	MountState Mounted() const;
 	void SetMountState(MountState state);
-	
+
 	uint32 LogicalBlockSize() const;
 	uint64 Offset() const;
 	uint64 Blocks() const;
@@ -185,7 +186,7 @@ public:
 		// center itself. Upon completion it will send it a message with
 		// <completionMessage> signature; the MessageReceived in the window
 		// needs to release <completionSemaphore> to unblock the call
-	
+
 	int32 UniqueID() const;
 		// returns a number uinque to the volume in a given device list
 		// used to identify unmounted volumes
@@ -207,7 +208,7 @@ private:
 	partition_data data;
 	Session *session;
 	MountState mounted;
-	
+
 	int32 partitionUniqueID;
 	dev_t volumeDeviceID;
 
@@ -219,7 +220,7 @@ private:
 
 class Session {
 public:
-	Session(Device *device, const char *, uint64 offset, uint64 blocks, 
+	Session(Device *device, const char *, uint64 offset, uint64 blocks,
 		bool data);
 
 	uint64 Blocks() const;
@@ -256,7 +257,7 @@ public:
 
 	bool IsDataSession() const;
 
-	static status_t GetSessionData(int32 dev, int32 index, 
+	static status_t GetSessionData(int32 dev, int32 index,
 		int32 blockSize, session_data *session);
 private:
 
@@ -292,14 +293,14 @@ public:
 	Session *SessionAt(int32 index) const;
 
 	int32 CountPartitions() const;
-	
+
 	int32 BlockSize() const;
 
 	void SetPartitioningFlags(drive_setup_partition_flags newFlags);
 
 	const char *Name() const;
 		// device name, including path
-	const char *DisplayName(bool includeBusID = true, 
+	const char *DisplayName(bool includeBusID = true,
 		bool includeLUN = false) const;
 
 	Session *NewSession(int32 dev, int32 index);
@@ -319,9 +320,9 @@ public:
 
 	bool Dump(void *);
 		// each function dump
-	
+
 	bool DeviceStateChanged(void *params);
-	
+
 	bool IsFloppy() const;
 
 private:
@@ -331,7 +332,7 @@ private:
 	bool OneIfDeviceStateChangedAdaptor(void *params);
 
 	void BuildDisplayName(bool includeBusID, bool includeLUN);
-	
+
 	char name[B_FILE_NAME_LENGTH];
 	char shortName[B_FILE_NAME_LENGTH];
 	int devfd;
@@ -344,7 +345,7 @@ private:
 	bool isFloppy;
 	bool media_changed;
 	bool eject_request;
-	
+
 	int32 blockSize;
 
 	TypedList<Session *> sessionList;
@@ -391,14 +392,14 @@ public:
 	Partition *EachMountedPartition(EachPartitionFunction, void *);
 	Partition *EachMountablePartition(EachPartitionFunction, void *);
 	Partition *EachInitializablePartition(EachPartitionFunction, void *);
-	
+
 	Partition *PartitionWithID(int32);
 
 	bool CheckDevicesChanged(DeviceScanParams *);
 	void UpdateChangedDevices(DeviceScanParams *);
 	bool UnmountDisappearedPartitions();
 		// ToDo: pass a hook function for alerting user
-	
+
 private:
 
 	bool EachChangedDevice(EachDeviceFunction, DeviceScanParams *, void *);

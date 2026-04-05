@@ -60,6 +60,8 @@ All rights reserved.
 	extern "C" void StartMenuBar__8BMenuBarFlbbP5BRect(BMenuBar *,int32,bool,bool,BRect *);
 #elif __GCC__ <= 2
 	extern "C" void StartMenuBar__8BMenuBarlbT2P5BRect(BMenuBar *,int32,bool,bool,BRect *);
+#elif __GCC__ >= 4
+	extern "C" void _ZN8BMenuBar12StartMenuBarEibbP5BRect(BMenuBar *,int32,bool,bool,BRect *);
 #else
 #	error "You may want to port this ugly hack to your compiler ABI"
 #endif
@@ -76,7 +78,7 @@ TBarWindow::TBarWindow()
 			B_ALL_WORKSPACES)
 {
 	desk_settings *settings = ((TBarApp *)be_app)->Settings();
-	if (settings->alwaysOnTop) 
+	if (settings->alwaysOnTop)
 		SetFeel(B_FLOATING_ALL_WINDOW_FEEL);
 	fBarView = new TBarView(Bounds(), settings->vertical,settings->left, settings->top,
 		settings->ampmMode, settings->state, settings->width, settings->showTime);
@@ -93,7 +95,7 @@ void
 TBarWindow::DispatchMessage(BMessage *message, BHandler *handler)
 {
 	// ToDo: check if the two following lines are doing anything...
-	if (message->what == B_MOUSE_DOWN) 
+	if (message->what == B_MOUSE_DOWN)
 		Activate(true);
 
 	BWindow::DispatchMessage(message, handler);
@@ -109,7 +111,7 @@ TBarWindow::MenusBeginning()
 	find_directory (B_USER_DESKBAR_DIRECTORY, &path);
 	get_ref_for_path(path.Path(), &ref);
 
-	BEntry entry(&ref, true);	
+	BEntry entry(&ref, true);
 	if (entry.InitCheck() == B_OK && entry.IsDirectory()) {
 		//	need the entry_ref to the actual item
 		entry.GetRef(&ref);
@@ -124,7 +126,7 @@ TBarWindow::MenusBeginning()
 			dir.CreateDirectory("be", &bedir);
 			if (bedir.GetEntry(&entry) == B_OK
 				&& entry.GetRef(&ref) == B_OK)
-				sBeMenu->SetNavDir(&ref);	
+				sBeMenu->SetNavDir(&ref);
 		}
 	} else {
 		//	this really should never happen
@@ -160,7 +162,7 @@ TBarWindow::MessageReceived(BMessage *message)
 				tracker.SendMessage(message);
 				break;
 			}
-				
+
 #if SA_CLOCK
 		case 'clok':
 			fBarView->ToggleClock();
@@ -174,7 +176,7 @@ TBarWindow::MessageReceived(BMessage *message)
 		case 'sloc':
 			SetLocation(message);
 			break;
-			
+
 		case 'gexp':
 			IsExpanded(message);
 			break;
@@ -182,7 +184,7 @@ TBarWindow::MessageReceived(BMessage *message)
 		case 'sexp':
 			Expand(message);
 			break;
-		
+
 		case 'info':
 			ItemInfo(message);
 			break;
@@ -203,11 +205,11 @@ TBarWindow::MessageReceived(BMessage *message)
 		case 'remv':
 			RemoveItem(message);
 			break;
-			
+
 		case 'iloc':
 			GetIconFrame(message);
 			break;
-					
+
 		default:
 			BWindow::MessageReceived(message);
 			break;
@@ -270,13 +272,13 @@ TBarWindow::BeMenu()
 }
 
 
-void 
+void
 TBarWindow::ShowBeMenu()
 {
 	BMenuBar *menuBar = fBarView->BarMenuBar();
 	if (menuBar == NULL)
 		menuBar = KeyMenuBar();
-	
+
 	if (menuBar == NULL)
 		return;
 
@@ -284,17 +286,19 @@ TBarWindow::ShowBeMenu()
 	StartMenuBar__8BMenuBarFlbbP5BRect(menuBar,0,true,true,NULL);
 #elif __GCC__ <= 2
 	StartMenuBar__8BMenuBarlbT2P5BRect(menuBar,0,true,true,NULL);
+#elif __GCC__ >= 4
+	_ZN8BMenuBar12StartMenuBarEibbP5BRect(menuBar,0,true,true,NULL);
 #endif
 }
 
 
-void 
+void
 TBarWindow::ShowTeamMenu()
 {
 	int32 index = 0;
 	if (fBarView->BarMenuBar() == NULL)
 		index = 2;
-	
+
 	if (KeyMenuBar() == NULL)
 		return;
 
@@ -302,6 +306,8 @@ TBarWindow::ShowTeamMenu()
 	StartMenuBar__8BMenuBarFlbbP5BRect(KeyMenuBar(),index,true,true,NULL);
 #elif __GCC__ <= 2
 	StartMenuBar__8BMenuBarlbT2P5BRect(KeyMenuBar(),index,true,true,NULL);
+#elif __GCC__ >= 4
+	_ZN8BMenuBar12StartMenuBarEibbP5BRect(KeyMenuBar(),index,true,true,NULL);
 #endif
 }
 
@@ -315,10 +321,10 @@ TBarWindow::DeskbarLocation() const
 
 	if (fBarView->AcrossTop())
 		return B_DESKBAR_TOP;
-	
+
 	if (fBarView->AcrossBottom())
 		return B_DESKBAR_BOTTOM;
-		
+
 	if (left && top)
 		return B_DESKBAR_LEFT_TOP;
 
@@ -355,7 +361,7 @@ TBarWindow::SetDeskbarLocation(deskbar_location location, bool newExpandState)
 			vertical = false;
 			expand = true;
 			break;
-			
+
 		case B_DESKBAR_BOTTOM:
 			left = true;
 			top = false;
@@ -376,14 +382,14 @@ TBarWindow::SetDeskbarLocation(deskbar_location location, bool newExpandState)
 			vertical = true;
 			expand = newExpandState;
 			break;
-			
+
 		case B_DESKBAR_LEFT_BOTTOM:
 			left = true;
 			top = false;
 			vertical = true;
 			expand = false;
 			break;
-			
+
 		case B_DESKBAR_RIGHT_BOTTOM:
 			left = false;
 			top = false;
@@ -448,7 +454,7 @@ TBarWindow::ItemInfo(BMessage *message)
 #if SHELF_AWARE
 			replyMsg.AddInt32("shelf", (int32)shelf);
 #endif
-		}	
+		}
 	} else if (message->FindString("name", &name) == B_OK) {
 		if (fBarView->ItemInfo(name, &id, &shelf) == B_OK) {
 			replyMsg.AddInt32("id", id);
@@ -457,7 +463,7 @@ TBarWindow::ItemInfo(BMessage *message)
 #endif
 		}
 	}
-		
+
 	message->SendReply(&replyMsg);
 }
 
@@ -470,18 +476,18 @@ TBarWindow::ItemExists(BMessage *message)
 	int32 id;
 	DeskbarShelf shelf;
 #if SHELF_AWARE
-	
+
 	if (message->FindInt32("shelf", (int32 *)&shelf) != B_OK)
 #endif
 		shelf = B_DESKBAR_TRAY;
-	
-	bool exists = false;	
-	if (message->FindInt32("id", &id) == B_OK) 
+
+	bool exists = false;
+	if (message->FindInt32("id", &id) == B_OK)
 		exists = fBarView->ItemExists(id, shelf);
-	else if (message->FindString("name", &name) == B_OK) 
+	else if (message->FindString("name", &name) == B_OK)
 		exists = fBarView->ItemExists(name, shelf);
-	
-	replyMsg.AddBool("exists", exists);	
+
+	replyMsg.AddBool("exists", exists);
 	message->SendReply(&replyMsg);
 }
 
@@ -495,7 +501,7 @@ TBarWindow::CountItems(BMessage *message)
 	if (message->FindInt32("shelf", (int32 *)&shelf) != B_OK)
 #endif
 		shelf = B_DESKBAR_TRAY;
-	
+
 	BMessage reply('rply');
 	reply.AddInt32("count", fBarView->CountItems(shelf));
 	message->SendReply(&reply);
@@ -513,12 +519,12 @@ TBarWindow::AddItem(BMessage *message)
 
 	BMessage archivedView;
 	if (message->FindMessage("view", &archivedView) == B_OK) {
-		
+
 #if SHELF_AWARE
 		if (message->FindInt32("shelf", (int32 *)&shelf) != B_OK)
 #endif
 			shelf = B_DESKBAR_TRAY;
-			
+
 		err = fBarView->AddItem(new BMessage(archivedView), shelf, &id);
 	} else if (message->FindRef("addon", &ref) == B_OK) {
 		//
@@ -531,7 +537,7 @@ TBarWindow::AddItem(BMessage *message)
 			err = tray->LoadAddOn(&entry, &id, true);
 		}
 	}
-	
+
 	if (err == B_OK)
 		reply.AddInt32("id", id);
 	else
@@ -551,7 +557,7 @@ TBarWindow::RemoveItem(BMessage *message)
 	//	that sometime in the future there may be more than one
 #if SHELF_AWARE
 	if (message->FindInt32("shelf", (int32 *)&shelf) == B_OK) {
-		
+
 		if (message->FindString("name", &name) == B_OK)
 			fBarView->RemoveItem(name, shelf);
 	} else {
@@ -579,7 +585,7 @@ TBarWindow::GetIconFrame(BMessage *message)
 		frame = fBarView->IconFrame(id);
 	else if (message->FindString("name", &name) == B_OK)
 		frame = fBarView->IconFrame(name);
-		
+
 	BMessage reply('rply');
 	reply.AddRect("frame", frame);
 	message->SendReply(&reply);

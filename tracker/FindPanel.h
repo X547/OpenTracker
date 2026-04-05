@@ -53,6 +53,7 @@ class BBox;
 class BTextControl;
 class BCheckBox;
 class BMenuField;
+class BPopUpMenu;
 class BFile;
 
 namespace BPrivate {
@@ -92,7 +93,7 @@ struct MoreOptionsStruct {
 	// reserve a bunch of fields so that we can add stuff later but not
 	// make old queries incompatible. Reserved fields are set to 0 when
 	// saved
-	
+
 	MoreOptionsStruct()
 		:	showMoreOptions(false),
 			searchTrash(false),
@@ -108,9 +109,9 @@ struct MoreOptionsStruct {
 			reserved7(0),
 			reserved8(0)
 		{}
-	
+
 	static void EndianSwap(void *castToThis);
-	
+
 	static void SetQueryTemporary(BNode *, bool on);
 	static bool QueryTemporary(const BNode *);
 };

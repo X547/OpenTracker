@@ -72,7 +72,7 @@ class MountMenuItem : public BMenuItem {
 	public:
 		MountMenuItem(const char *label, BMessage *message, BBitmap *icon );
 		virtual ~MountMenuItem();
-		virtual void GetContentSize(float *width, float *height);	
+		virtual void GetContentSize(float *width, float *height);
 		virtual void DrawContent();
 
 	private:
@@ -106,13 +106,13 @@ TBeMenu::AttachedToWindow()
 		if (fBarView->Dragging()) {
 			SetTypesList(fBarView->CachedTypesList());
 			SetTarget(BMessenger(fBarView));
-			SetTrackingHookDeep(this, fBarView->MenuTrackingHook, 
+			SetTrackingHookDeep(this, fBarView->MenuTrackingHook,
 				fBarView->GetTrackingHookData());
 			fBarView->DragStart();
 		} else {
 			SetTypesList(NULL);
 			SetTarget(BMessenger(kTrackerSignature));
-			SetTrackingHookDeep(this, NULL, NULL);		
+			SetTrackingHookDeep(this, NULL, NULL);
 		}
 
 		fBarView->UnlockLooper();
@@ -136,12 +136,12 @@ TBeMenu::DetachedFromWindow()
 	//
 	//	don't call BNavMenu::DetachedFromWindow
 	//	it sets the TypesList to NULL
-	//	
+	//
 	BMenu::DetachedFromWindow();
 }
 
 
-bool 
+bool
 TBeMenu::StartBuildingItemList()
 {
 	int32 count = CountItems()-1;
@@ -169,9 +169,9 @@ TBeMenu::DoneBuildingItemList()
 }
 
 
-bool 
+bool
 TBeMenu::AddNextItem()
-{	
+{
 	if (fAddState == kStart)
 		return AddStandardBeMenuItems();
 
@@ -190,8 +190,8 @@ TBeMenu::AddNextItem()
 		}
 		if (count > 0) {
 			AddSeparatorItem();
-			
-			for (int i = 0;i < recentTypes;i++) {			
+
+			for (int i = 0;i < recentTypes;i++) {
 				if (!recentItem[i])
 					continue;
 
@@ -212,7 +212,7 @@ TBeMenu::AddNextItem()
 		fAddState = kAddingBeMenu;
 		return true;
 	}
-	
+
 	if (fAddState == kAddingBeMenu) {
 		//	keep reentering and adding items
 		//	until this returns false
@@ -233,7 +233,7 @@ TBeMenu::AddNextItem()
 			fAddState = kDone;
 		return done;
 	}
-	
+
 	return false;
 }
 
@@ -248,12 +248,12 @@ TBeMenu::AddStandardBeMenuItems()
 	BMenuItem* item = new BMenuItem("About BeOS", new BMessage(kShowSplash));
 	item->SetEnabled(!dragging);
 	AddItem(item);
-	
+
 #ifdef SHOW_RECENT_FIND_ITEMS
-	item = new BMenuItem(TrackerBuildRecentFindItemsMenu("Find"B_UTF8_ELLIPSIS),
+	item = new BMenuItem(TrackerBuildRecentFindItemsMenu("Find" B_UTF8_ELLIPSIS),
 		new BMessage(kFindButton));
 #else
- 	item = new BMenuItem("Find"B_UTF8_ELLIPSIS, new BMessage(kFindButton));
+ 	item = new BMenuItem("Find" B_UTF8_ELLIPSIS, new BMessage(kFindButton));
 #endif
 	item->SetEnabled(!dragging);
 	AddItem(item);
@@ -273,7 +273,7 @@ TBeMenu::AddStandardBeMenuItems()
  	BMenu *subMenu = new BMenu("Deskbar Settings");
 	subMenu->SetEnabled(!dragging);
 
-	item = new BMenuItem("Configure Be Menu"B_UTF8_ELLIPSIS, new BMessage(msg_config_db));
+	item = new BMenuItem("Configure Be Menu" B_UTF8_ELLIPSIS, new BMessage(msg_config_db));
  	item->SetTarget(be_app);
 	subMenu->AddItem(item);
 
@@ -294,7 +294,7 @@ TBeMenu::AddStandardBeMenuItems()
 	subMenu->AddItem(item);
 
  	subMenu->AddSeparatorItem();
- 	
+
  	TReplicantTray *replicantTray = ((TBarApp *)be_app)->BarView()->fReplicantTray;
 
 	item = new BMenuItem("24 Hour Clock", new BMessage(msg_miltime));
@@ -333,7 +333,7 @@ TBeMenu::AddStandardBeMenuItems()
 	item->SetMarked( static_cast<TBarApp *>(be_app)->Settings()->expandNewTeams);
 	item->SetEnabled(static_cast<TBarApp *>(be_app)->Settings()->superExpando);
 	subMenu->AddItem(item);
- 
+
  	subMenu->SetFont(be_plain_font);
   	AddItem(subMenu);
 
@@ -390,7 +390,7 @@ TBeMenu::AddStandardBeMenuItems()
 }
 
 
-void 
+void
 TBeMenu::ClearMenuBuildingState()
 {
 	fAddState = kDone;
@@ -404,7 +404,7 @@ void
 TBeMenu::ResetTargets()
 {
 	BNavMenu::ResetTargets();
-	
+
 	//
 	//	if we are dragging, set the target to whatever was set
 	//	else set it to the default (Tracker)
@@ -436,7 +436,7 @@ TBeMenu::ResetTargets()
 					// about, find
 					item->SetTarget(BMessenger(kTrackerSignature));
 					break;
-	
+
 				case msg_ToggleDraggers:
 				case msg_config_db:
 				case msg_AlwaysTop:
@@ -446,7 +446,7 @@ TBeMenu::ResetTargets()
 					// show/hide replicants
 					item->SetTarget(be_app);
 					break;
-					
+
 				case CMD_REBOOT_SYSTEM:
 				case CMD_SUSPEND_SYSTEM:
 				case CMD_SHUTDOWN_SYSTEM:
@@ -533,12 +533,12 @@ TRecentsMenu::DetachedFromWindow()
 {
 	//
 	//	BNavMenu::DetachedFromWindow sets the TypesList to NULL
-	//	
+	//
 	BMenu::DetachedFromWindow();
 }
 
 
-bool 
+bool
 TRecentsMenu::StartBuildingItemList()
 {
 	int32 count = CountItems()-1;
@@ -560,7 +560,7 @@ TRecentsMenu::StartBuildingItemList()
 }
 
 
-bool 
+bool
 TRecentsMenu::AddNextItem()
 {
 	if (fRecentsCount > 0 && AddRecents(fRecentsCount))
@@ -667,7 +667,7 @@ TRecentsMenu::AddRecents(int32 count)
 }
 
 
-void 
+void
 TRecentsMenu::DoneBuildingItemList()
 {
 	//
@@ -682,7 +682,7 @@ TRecentsMenu::DoneBuildingItemList()
 }
 
 
-void 
+void
 TRecentsMenu::ClearMenuBuildingState()
 {
 	fMenuBuilt = false;
@@ -693,7 +693,7 @@ TRecentsMenu::ClearMenuBuildingState()
 void
 TRecentsMenu::ResetTargets()
 {
-	BNavMenu::ResetTargets();	
+	BNavMenu::ResetTargets();
 	//
 	//	if we are dragging, set the target to whatever was set
 	//	else set it to the default (Tracker)
@@ -736,15 +736,15 @@ MountMenu::AddDynamicItem(add_state s)
 	BMessenger(kTrackerSignature).SendMessage(&request,
 		&reply);
 
-	//	
+	//
 	// populate menu
-	//	
+	//
 	type_code code;
 	int32 countFound;
 	reply.GetInfo("DisplayName", &code, &countFound);
 	for (int32 vol = 0; vol < countFound; vol++) {
 		BBitmap *icon = new BBitmap(BRect(0,0,15,15),B_COLOR_8_BIT);
-		get_device_icon(reply.FindString("DeviceName", vol), icon->Bits(), B_MINI_ICON);	
+		get_device_icon(reply.FindString("DeviceName", vol), icon->Bits(), B_MINI_ICON);
 		BMessage *invokeMessage = new BMessage;
 		reply.FindMessage("InvokeMessage", vol, invokeMessage);
 		AddItem(new MountMenuItem(reply.FindString("DisplayName", vol),
@@ -795,7 +795,7 @@ MountMenuItem::DrawContent()
 	loc.x += 20;
 	Menu()->MovePenTo(loc);
 	BMenuItem::DrawContent();
-	
+
 	BPoint where(ContentLocation());
 	where.y = Frame().top;
 	Menu()->SetDrawingMode(B_OP_OVER);

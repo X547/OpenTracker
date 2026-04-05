@@ -41,6 +41,7 @@ All rights reserved.
 
 #include <MenuBar.h>
 
+class BLocker;
 class BBitmap;
 class TBarView;
 class TBarMenuTitle;

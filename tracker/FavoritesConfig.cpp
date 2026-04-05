@@ -47,7 +47,7 @@ All rights reserved.
 //	after New Folder, scroll to selection
 //	move of items to folders
 //	change parent folder btn to be a NavMenu
-//	
+//
 // ***************************************************************************************
 
 #include <stdio.h>
@@ -232,13 +232,13 @@ CenterWindowOnScreen(BWindow *window)
 float
 FontHeight(const BFont *font, bool full)
 {
-	font_height finfo;		
+	font_height finfo;
 	font->GetHeight(&finfo);
 	float height = finfo.ascent + finfo.descent;
 
 	if (full)
 		height += finfo.leading;
-	
+
 	return height;
 }
 
@@ -284,17 +284,17 @@ TFavoritesConfigWindow::~TFavoritesConfigWindow()
 {
 	//	node monitoring the be menu directory
 	stop_watching(this);
-	
-	if (fAddPanel && fAddPanel->IsShowing()) 
+
+	if (fAddPanel && fAddPanel->IsShowing())
 		//	kill the filepanel if its still showing
-		fAddPanel->Hide();		
+		fAddPanel->Hide();
 
 	BMessenger tracker(kTrackerSignature);
 	StopWatching(tracker, kFavoriteCountChanged);
 }
 
 
-void 
+void
 TFavoritesConfigWindow::MessageReceived(BMessage *message)
 {
 	switch (message->what) {
@@ -305,7 +305,7 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 
 		//	double click on item in menuthing
 		case kDoubleClick:
-			{				
+			{
 				entry_ref ref;
 				if (message->FindRef("current", &ref) == B_OK)
 					OpenGroup(&ref);
@@ -317,7 +317,7 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 			if (fMenuThing->Value() >= 0 && fMenuThing->Value() < fMenuThing->ItemCount())
 				OpenGroup(fMenuThing->ItemAt(fMenuThing->Value())->EntryRef());
 			break;
-			
+
 		case kEditItem:
 			{
 				int32 selection = fMenuThing->Value();
@@ -326,12 +326,12 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 				const Model *item = fMenuThing->ItemAt(selection);
 				if (!item)
 					break;
-		
+
 				new NameItemPanel(this, item->Name());
 				//	shows itself, kills itself
 			}
 			break;
-			
+
 		case 'canc':
 			break;
 
@@ -347,7 +347,7 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 						break;
 
 					const entry_ref *ref = item->EntryRef();
-					if (strcmp(ref->name, name) != 0) {							
+					if (strcmp(ref->name, name) != 0) {
 						BEntry entry(ref);
 						if (entry.InitCheck() == B_OK && entry.Exists())
 							entry.Rename(name);
@@ -355,10 +355,10 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 				}
 			}
 			break;
-			
+
 		//	change of selection in directory menu
 		case kShowGroup:
-			{				
+			{
 				entry_ref ref;
 				if (message->FindRef("current", &ref) == B_OK)
 					ShowGroup(&ref);
@@ -379,10 +379,10 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 						BMessage *message = item->Message();
 						if (message) {
 							entry_ref ref;
-							if (message->FindRef("current", &ref) == B_OK) {							
+							if (message->FindRef("current", &ref) == B_OK) {
 								ShowGroup(&ref);
 							}
-						}						
+						}
 					}
 				}
 			}
@@ -390,7 +390,7 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 
 		//	new group icon
 		case kNewGroup:
-			AddNewGroup();			
+			AddNewGroup();
 			break;
 
 		//	Add button
@@ -435,7 +435,7 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 			else
 				UpdateAppsCount(0);
 			break;
-			
+
 		case kRecentFoldersCount:
 			UpdateFoldersCount();
 			break;
@@ -458,7 +458,7 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 								int32 appCount = 10;
 								int32 documentCount = 10;
 								int32 folderCount = 10;
-								
+
 								if (message->FindInt32("RecentApplications", &appCount) == B_OK) {
 									BString appStr;
 									appStr << appCount;
@@ -466,7 +466,7 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 									UpdateAppsCount(appCount, false);
 										// false -> do not tell tracker
 								}
-								
+
 								if (message->FindInt32("RecentDocuments", &documentCount) == B_OK) {
 									BString docStr;
 									docStr << documentCount;
@@ -474,7 +474,7 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 									UpdateDocsCount(documentCount, false);
 										// false -> do not tell tracker
 								}
-								
+
 								if (message->FindInt32("RecentFolders", &folderCount) == B_OK) {
 									BString folderStr;
 									folderStr << folderCount;
@@ -485,7 +485,7 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 							}
 							break;
 					}
-				}		
+				}
 			}
 			break;
 
@@ -496,7 +496,7 @@ TFavoritesConfigWindow::MessageReceived(BMessage *message)
 }
 
 
-bool 
+bool
 TFavoritesConfigWindow::QuitRequested()
 {
 	//	tell the app the config panel is closing
@@ -523,7 +523,7 @@ TFavoritesConfigWindow::QuitRequested()
 			count = 0;
 		message.AddInt32("documents", count);
 	}
-	
+
 	fParent.SendMessage(&message);
 	return true;
 }
@@ -536,7 +536,7 @@ TFavoritesConfigWindow::AddParts(int32 maxApps, int32 maxDocs, int32 maxFolders)
 	AddBeMenuPane(maxApps, maxDocs, maxFolders);
 
 	// find the bg with the largest dimensions
-	ResizeTo(fBeMenuPaneBG->Frame().Width(), fBeMenuPaneBG->Frame().Height());	
+	ResizeTo(fBeMenuPaneBG->Frame().Width(), fBeMenuPaneBG->Frame().Height());
 
 	// enable node watching
 	// fill the pseudo menu
@@ -549,17 +549,17 @@ TFavoritesConfigWindow::BuildCommon(BRect *frame, int32 count, const char *strin
 	uint32 btnWhat, uint32 fldWhat, BCheckBox **button, BTextControl **field, BBox *parent)
 {
 	frame->right = frame->left + be_plain_font->StringWidth(string)
-		+ kCheckBoxPad;		
+		+ kCheckBoxPad;
 
 	BCheckBox *newButton = new BCheckBox(*frame, "recents btn", string,
 		new BMessage(btnWhat), B_FOLLOW_BOTTOM | B_FOLLOW_LEFT,
 		B_WILL_DRAW | B_NAVIGABLE);
 	parent->AddChild(newButton);
 	newButton->SetValue(count > 0);
-	
+
 	float width = be_plain_font->StringWidth(kShowStr);
 	frame->right = frame->left + width
-		+ (be_plain_font->StringWidth("0") * 4) + kTextControlPad;		
+		+ (be_plain_font->StringWidth("0") * 4) + kTextControlPad;
 	BTextControl *newFld = new BTextControl(*frame, "recents fld", kShowStr, "",
 		new BMessage(fldWhat), B_FOLLOW_BOTTOM | B_FOLLOW_LEFT,
 		B_WILL_DRAW | B_NAVIGABLE);
@@ -567,7 +567,7 @@ TFavoritesConfigWindow::BuildCommon(BRect *frame, int32 count, const char *strin
 	newFld->SetDivider(width + 5);
 	newFld->SetAlignment(B_ALIGN_RIGHT, B_ALIGN_CENTER);
 	newFld->SetEnabled(count>0);
-	
+
 	char str[32];
 	sprintf(str, "%ld", count);
 	newFld->SetText(str);
@@ -580,7 +580,7 @@ TFavoritesConfigWindow::BuildCommon(BRect *frame, int32 count, const char *strin
 	for (uint32 index = '0'; index <= '9'; index++)
 		textView->AllowChar(index);
 	textView->AllowChar(B_BACKSPACE);
-	
+
 	*button = newButton;
 	*field = newFld;
 }
@@ -592,10 +592,10 @@ TFavoritesConfigWindow::AddBeMenuPane(int32 maxApps, int32 maxDocs, int32 maxFol
 	fBeMenuPaneBG = new BBox(Bounds(), "bg", B_FOLLOW_NONE,
 		B_WILL_DRAW, B_PLAIN_BORDER);
 	AddChild(fBeMenuPaneBG);
-	
+
 	BRect frame;
 	float width = 0;
-	
+
 	//	New Group
 	fNewGroupBtn = new TDraggableIconButton(BRect(10, 0, 41, 31), kNewGroupStr,
 		new BMessage(kNewGroup), B_FOLLOW_LEFT | B_FOLLOW_BOTTOM,
@@ -622,7 +622,7 @@ TFavoritesConfigWindow::AddBeMenuPane(int32 maxApps, int32 maxDocs, int32 maxFol
 		fRecentAppsBtn = NULL;
 		fRecentAppsFld = NULL;
 	}
-	
+
 	//	Recent Folders
 	if (maxFolders > -1) {
 		BuildCommon(&frame, maxFolders, kRecentFoldersStr,
@@ -634,7 +634,7 @@ TFavoritesConfigWindow::AddBeMenuPane(int32 maxApps, int32 maxDocs, int32 maxFol
 	}
 
 	//	will place this items left edge relative to the contents list
-	fGroupMenu = new BPopUpMenu("Show Group");	
+	fGroupMenu = new BPopUpMenu("Show Group");
 	width = be_plain_font->StringWidth("Some Long Name For a Group")
 		+ kMenuFieldPad;
 	frame.Set(0, 10, width, 11);
@@ -642,17 +642,17 @@ TFavoritesConfigWindow::AddBeMenuPane(int32 maxApps, int32 maxDocs, int32 maxFol
 	fBeMenuPaneBG->AddChild(fGroupBtn);
 	fGroupBtn->HidePopUpMarker();
 	fGroupBtn->SetDivider(0);
-	
+
 #ifdef IS_SORTABLE
 	//	not sortable now, ever (?)
 	fSortMenu = new BPopUpMenu("Sort By");
 	fSortMenu->AddItem(new BMenuItem("Sort One", NULL));
 	fSortMenu->AddItem(new BMenuItem("Sort Two", NULL));
-	
+
 	frame.OffsetBy(0, fGroupBtn->Frame().Height() + kMenuFieldGap);
 	fSortBtn = new BMenuField(frame, "sort btn", kSortByStr, fSortMenu);
 	fBeMenuPaneBG->AddChild(fSortBtn);
-	fSortBtn->SetDivider(be_plain_font->StringWidth(kSortByStr) + 5);	
+	fSortBtn->SetDivider(be_plain_font->StringWidth(kSortByStr) + 5);
 #endif
 
 	//	Contents List
@@ -670,10 +670,10 @@ TFavoritesConfigWindow::AddBeMenuPane(int32 maxApps, int32 maxDocs, int32 maxFol
 	else if (maxDocs > -1 && fRecentDocsBtn)
 		frame.left = fRecentDocsBtn->Frame().right + 10;
 	else if (maxFolders > -1 && fRecentFoldersBtn)
-		frame.left = fRecentFoldersBtn->Frame().right + 10;		
+		frame.left = fRecentFoldersBtn->Frame().right + 10;
 	else
 		frame.left = fGroupBtn->Frame().right + 10;
-		
+
 	frame.right = frame.left + 1;
 	fMenuThing = new TContentsMenu(frame, new BMessage(kItemSelected),
 		new BMessage(kDoubleClick), 10, &fCurrentRef);
@@ -694,7 +694,7 @@ TFavoritesConfigWindow::AddBeMenuPane(int32 maxApps, int32 maxDocs, int32 maxFol
 	width = be_plain_font->StringWidth("Add"B_UTF8_ELLIPSIS);
 	frame.Set(0, 0, (kMinBtnWidth >= width) ? kMinBtnWidth : width, 1);
 	fAddBtn = new BButton(frame, "add", "Add"B_UTF8_ELLIPSIS, new BMessage(kAdd),
-		B_FOLLOW_NONE, B_WILL_DRAW | B_NAVIGABLE);		
+		B_FOLLOW_NONE, B_WILL_DRAW | B_NAVIGABLE);
 	fBeMenuPaneBG->AddChild(fAddBtn);
 
 	width = be_plain_font->StringWidth(kRemoveStr);
@@ -716,13 +716,13 @@ TFavoritesConfigWindow::AddBeMenuPane(int32 maxApps, int32 maxDocs, int32 maxFol
 	fEditBtn->MoveTo(fOpenBtn->Frame().left - 10 - fEditBtn->Frame().Width(),
 		fOpenBtn->Frame().top);
 
-	fRemoveBtn->MoveTo(fOpenBtn->Frame().left, fOpenBtn->Frame().bottom + 5);		
-	fAddBtn->MoveTo(fEditBtn->Frame().left, fRemoveBtn->Frame().top);		
+	fRemoveBtn->MoveTo(fOpenBtn->Frame().left, fOpenBtn->Frame().bottom + 5);
+	fAddBtn->MoveTo(fEditBtn->Frame().left, fRemoveBtn->Frame().top);
 
 	// resize the pane so that everything is visible
 	fBeMenuPaneBG->ResizeTo(fMenuThing->Frame().right + 10,
 		fMenuThing->Frame().bottom + 10 + fOpenBtn->Frame().Height() + 5
-			+ fRemoveBtn->Frame().Height() + 10);	
+			+ fRemoveBtn->Frame().Height() + 10);
 
 	//	place the remaining controls relative to the menu thing
 	float bottom;
@@ -735,20 +735,20 @@ TFavoritesConfigWindow::AddBeMenuPane(int32 maxApps, int32 maxDocs, int32 maxFol
 			bottom - fRecentFoldersFld->Frame().Height());
 		fRecentFoldersBtn->MoveTo(10,
 			fRecentFoldersFld->Frame().top - fRecentFoldersBtn->Frame().Height());
-			
+
 		left = fRecentFoldersBtn->Frame().right
 			- (fRecentFoldersBtn->Frame().Width() / 2) - (fNewGroupBtn->Frame().Width() / 2);
 	}
-	
+
 	if (maxApps > -1 && fRecentAppsFld && fRecentAppsBtn) {
 		if (maxFolders > -1 && fRecentFoldersFld && fRecentFoldersBtn)
 			bottom = fRecentFoldersBtn->Frame().top - 20;
 		else {
-			bottom = menuthingframe.bottom;			
+			bottom = menuthingframe.bottom;
 			left = fRecentAppsBtn->Frame().right
 				- (fRecentAppsBtn->Frame().Width() / 2) - (fNewGroupBtn->Frame().Width() / 2);
 		}
-  
+
 		fRecentAppsFld->MoveTo(
 			menuthingframe.left - fRecentAppsFld->Frame().Width() - 10,
 			bottom - fRecentAppsFld->Frame().Height());
@@ -762,11 +762,11 @@ TFavoritesConfigWindow::AddBeMenuPane(int32 maxApps, int32 maxDocs, int32 maxFol
 		else if (maxFolders > -1 && fRecentFoldersFld && fRecentFoldersBtn)
 			bottom = fRecentFoldersBtn->Frame().top - 20;
 		else {
-			bottom = menuthingframe.bottom;			
+			bottom = menuthingframe.bottom;
 			left = fRecentDocsBtn->Frame().right
 				- (fRecentDocsBtn->Frame().Width() / 2) - (fNewGroupBtn->Frame().Width() / 2);
 		}
-		
+
 		fRecentDocsFld->MoveTo(
 			menuthingframe.left - fRecentDocsFld->Frame().Width() - 10,
 			bottom - fRecentDocsFld->Frame().Height());
@@ -777,7 +777,7 @@ TFavoritesConfigWindow::AddBeMenuPane(int32 maxApps, int32 maxDocs, int32 maxFol
 	//	place this button relative (centered) to
 	//	any recents items and content list
 	fNewGroupBtn->MoveTo(left, menuthingframe.top);
-		
+
 #ifdef IS_SORTABLE
 	fSortBtn->MoveTo(menuthingframe.left - fSortBtn->Divider(),
 		fSortBtn->Frame().top);
@@ -805,10 +805,10 @@ void
 TFavoritesConfigWindow::AddNewGroup(entry_ref *dirRef, entry_ref *newGroup)
 {
 	BDirectory dir(dirRef);
-	
+
 	char directoryName[B_FILE_NAME_LENGTH];
 	GetNextGroupName(&dir, directoryName);
-		
+
 	BDirectory subdir;
 	dir.CreateDirectory(directoryName, &subdir);
 
@@ -849,7 +849,7 @@ TFavoritesConfigWindow::PromptForAdd()
 	else {
 		//  determine a starting point for where apps are added from
 		char appPath[B_PATH_NAME_LENGTH];
-		
+
 		//  search for an apps directory
 		if (find_directory(B_APPS_DIRECTORY, 0, false, appPath, B_PATH_NAME_LENGTH) == B_OK) {
 			entry_ref ref;
@@ -862,7 +862,7 @@ TFavoritesConfigWindow::PromptForAdd()
 		} else
 			fAddPanel = new BFilePanel(B_OPEN_PANEL, new BMessenger(this, this),
 				NULL, fFilePanelNodeFlavors, true);
-		
+
 		fAddPanel->SetButtonLabel(B_DEFAULT_BUTTON, "Add");
 		fAddPanel->Show();
 	}
@@ -889,18 +889,18 @@ TFavoritesConfigWindow::OpenGroup(const entry_ref *ref)
 {
 	if (!ref)
 		return;
-		
+
 	fCurrentRef = *ref;
 	fMenuThing->SetStartRef(&fCurrentRef);
 	fMenuThing->SetValue(0);
-	
+
 	BMessage *message = new BMessage(kShowGroup);
 	message->AddRef("current", &fCurrentRef);
-	
+
 	ModelMenuItem *item = new ModelMenuItem(new Model(&fCurrentRef), fCurrentRef.name, message);
 	fGroupMenu->AddItem(item);
 	item->SetMarked(true);
-	
+
 	UpdateButtons();
 }
 
@@ -912,9 +912,9 @@ TFavoritesConfigWindow::ShowGroup(const entry_ref *groupRef)
 {
 	if (!groupRef)
 		return;
-	
+
 	entry_ref lastRef = fCurrentRef;
-		
+
 	fCurrentRef = *groupRef;
 	fMenuThing->SetStartRef(&fCurrentRef);
 	fMenuThing->Select(&lastRef);
@@ -932,17 +932,17 @@ TFavoritesConfigWindow::ShowGroup(const entry_ref *groupRef)
 					//	if we have a match
 					//	delete all the items below this item
 					if (ref == fCurrentRef) {
-						for (int32 j = count ; j > index ; j--) 
+						for (int32 j = count ; j > index ; j--)
 							delete fGroupMenu->RemoveItem(j);
 
 						item->SetMarked(true);
-						break;						
+						break;
 					}
 				}
 			}
 		}
 	}
-	
+
 	UpdateButtons();
 }
 
@@ -955,7 +955,7 @@ TFavoritesConfigWindow::UpdateButtons()
 	//	Remove is selected only if there is a selection
 	//	Add is always enabled
 	int32 selection = fMenuThing->Value();
-	
+
 	if (selection >= 0 && selection < fMenuThing->ItemCount())
 		fOpenBtn->SetEnabled(fMenuThing->ItemAt(selection)->IsDirectory());
 	else
@@ -975,7 +975,7 @@ TFavoritesConfigWindow::UpdateFoldersCount(int32 count, bool notifyTracker)
 	BMessage message(kUpdateFolderCount);
 	message.AddInt32("count", count);
 	fParent.SendMessage(&message);
-	
+
 	if (notifyTracker) {
 		BMessenger tracker(kTrackerSignature);
 		BMessage notificationMessage(kFavoriteCountChangedExternally);
@@ -1039,11 +1039,11 @@ TDraggableIconButton::~TDraggableIconButton()
 }
 
 
-void 
+void
 TDraggableIconButton::AttachedToWindow()
 {
 	BControl::AttachedToWindow();
-	
+
 	if (Parent())
 		SetViewColor(Parent()->ViewColor());
 	else
@@ -1053,7 +1053,7 @@ TDraggableIconButton::AttachedToWindow()
 	fIcon->SetBits(kLargeNewGroupIcon, fIcon->BitsLength(), 0, B_COLOR_8_BIT);
 	//	calculate correct frame for icon and label
 	//	sets icon rect and label rect for drawing
-	ResizeToPreferred();	
+	ResizeToPreferred();
 }
 
 
@@ -1066,37 +1066,37 @@ TDraggableIconButton::DetachedFromWindow()
 }
 
 
-void 
+void
 TDraggableIconButton::Draw(BRect)
 {
 	PushState();
-	
+
 	SetHighColor(kBlack);
 	SetLowColor(ViewColor());
-	
+
 	if (fIcon) {
 		SetDrawingMode(B_OP_OVER);
 		DrawBitmapAsync(fIcon, fIconRect);
 	}
-	
+
 	SetDrawingMode(B_OP_COPY);
 	MovePenTo(fLabelRect.LeftBottom());
 	DrawString(Label());
-	
+
 	if (IsEnabled() && IsFocus() && Window()->IsActive())
 		SetHighColor(kBlack);
 	else
 		SetHighColor(ViewColor());
 	StrokeRect(Bounds());
-	
+
 	PopState();
 }
 
 
-void 
+void
 TDraggableIconButton::MouseDown(BPoint where)
 {
-	ulong buttons;
+	uint32 buttons;
 	BPoint loc;
 	GetMouse(&loc, &buttons);
 	if (!buttons)
@@ -1111,14 +1111,14 @@ TDraggableIconButton::MouseDown(BPoint where)
 }
 
 
-void 
+void
 TDraggableIconButton::MouseUp(BPoint where)
 {
 	if (IsTracking()) {
 		InvertRect(fIconRect);
 		SetTracking(false);
 		fDragging = false;
-		if (Bounds().Contains(where) && fInitialClickRect.Contains(where)) 
+		if (Bounds().Contains(where) && fInitialClickRect.Contains(where))
 			//	tell parent to add a new group
 			Invoke();
 
@@ -1127,7 +1127,7 @@ TDraggableIconButton::MouseUp(BPoint where)
 }
 
 
-void 
+void
 TDraggableIconButton::MouseMoved(BPoint where, uint32 code,
 	const BMessage *message)
 {
@@ -1143,21 +1143,21 @@ TDraggableIconButton::MouseMoved(BPoint where, uint32 code,
 }
 
 
-void 
+void
 TDraggableIconButton::GetPreferredSize(float *width, float *height)
 {
 	float stringWidth = be_plain_font->StringWidth(Label());
 	float fontHeight = FontHeight(be_plain_font, true);
 	*width = stringWidth + 10;
 	*height = 32 + fontHeight + 5;
-	
+
 	fIconRect.Set((*width / 2) - 16, 2, (*width / 2) + 15, 33);
 	fLabelRect.Set((*width / 2) - (stringWidth / 2),
 		*height - fontHeight - 5, *width, *height - 5);
 }
 
 
-void 
+void
 TDraggableIconButton::ResizeToPreferred()
 {
 	float width, height;
@@ -1201,11 +1201,11 @@ TContentsMenu::~TContentsMenu()
 }
 
 
-void 
+void
 TContentsMenu::AttachedToWindow()
 {
 	BControl::AttachedToWindow();
-	
+
 	menu_info minfo;
 	get_menu_info(&minfo);
 
@@ -1229,20 +1229,20 @@ TContentsMenu::AttachedToWindow()
 	fHiliteColor = ui_color(B_MENU_SELECTION_BACKGROUND_COLOR);
 #else
 	fHiliteColor = tint_color(minfo.background_color, B_DARKEN_2_TINT);
-#endif	
+#endif
 	//	add the buttons
 	//	cache item frame, sub of frame - buttons
 	fContentsList = new BObjectList<Model>(kMaxItemCount);
-	
+
 	SetValue(-1);		//	no item selected
-	
+
 	ResizeToPreferred();
-	
+
 	BRect frame(2, 2, Bounds().Width() - 2, 2 + kScrollerHeight);
 	fUpBtn = new TScrollerButton(frame, new BMessage(kScrollDown), true);
 	AddChild(fUpBtn);
 	fUpBtn->SetTarget(this, Window());
-	
+
 	frame.bottom = Bounds().Height()-2;
 	frame.top = frame.bottom - kScrollerHeight;
 	fDownBtn = new TScrollerButton(frame, new BMessage(kScrollUp), false);
@@ -1259,7 +1259,7 @@ TContentsMenu::AttachedToWindow()
 	if (symlink.InitCheck() == B_OK) {
 		fSymlinkIcon = new BBitmap(BRect(0, 0, 15, 15), B_COLOR_8_BIT);
 		if (symlink.GetIcon(fSymlinkIcon, B_MINI_ICON) != B_OK)
-			fSymlinkIcon = NULL;		
+			fSymlinkIcon = NULL;
 	} else
 		fSymlinkIcon = NULL;
 
@@ -1286,17 +1286,17 @@ TContentsMenu::DetachedFromWindow()
 
 const char *kUntitledItemStr = "<Untitled Item>";
 
-void 
+void
 TContentsMenu::Draw(BRect updateRect)
 {
 	PushState();
-	
+
 	//	draw frame
 	SetLowColor(ViewColor());
-	
+
 	BRect frame(Bounds());
 	//	main border
-		
+
 #ifdef SNAKE
 	SetHighColor(kBlack);
 	StrokeRoundRect(frame, 3.0, 3.0);
@@ -1305,7 +1305,7 @@ TContentsMenu::Draw(BRect updateRect)
 	SetHighColor(100, 100, 100);
 	StrokeRect(frame);
 
-	//	interior white	
+	//	interior white
 	SetHighColor(233, 233, 233);
 	//	top
 	StrokeLine(frame.LeftTop() + BPoint(1, 1), frame.RightTop() + BPoint(-1, 1));
@@ -1318,13 +1318,13 @@ TContentsMenu::Draw(BRect updateRect)
 	StrokeLine(frame.RightTop() + BPoint(-1, -1), frame.RightBottom() + BPoint(-1, -1));
 	// 	bottom
 	StrokeLine(frame.LeftBottom() + BPoint(1, -1), frame.RightBottom() + BPoint(-1, -1));
-	
+
 #endif
-	
+
 	SetDrawingMode(B_OP_OVER);
-	
+
 	BRect iconFrame, textFrame, itemFrame;
-	
+
 	int32 max = fContentsList->CountItems() - fFirstItem;
 	int32 count = count = (max > kMaxItemCount) ? kMaxItemCount : max;
 	count += fFirstItem;
@@ -1333,16 +1333,16 @@ TContentsMenu::Draw(BRect updateRect)
 		Model *item = fContentsList->ItemAt(index);
 		if (!item)
 			continue;
-		
+
 		if (!ItemFrame(index - fFirstItem, &iconFrame, &textFrame, &itemFrame))
 			continue;
-		
+
 		if (!itemFrame.Intersects(updateRect))
 			continue;
 
 		//	see if an item is selected
-		if (Value() == index) {			
-			SetHighColor(fHiliteColor);			
+		if (Value() == index) {
+			SetHighColor(fHiliteColor);
 			SetLowColor(fHiliteColor);
 #ifdef SNAKE
 			FillRoundRect(itemFrame, 3.0, 3.0);
@@ -1358,7 +1358,7 @@ TContentsMenu::Draw(BRect updateRect)
 			SetLowColor(ViewColor());
 			FillRect(itemFrame);
 		}
-				
+
 		Model resolvedItem;
 		if (item->IsSymLink()) {
 			//	if this item is a symlink
@@ -1383,7 +1383,7 @@ TContentsMenu::Draw(BRect updateRect)
 				entry_ref ref;
 				ref.set_name("");
 				resolvedItem.SetTo(&ref);
-			}	
+			}
 		} else {
 			if (item->IsDirectory() && fSmallGroupIcon) {
 				SetDrawingMode(B_OP_OVER);
@@ -1391,7 +1391,7 @@ TContentsMenu::Draw(BRect updateRect)
 			} else
 				IconCache::sIconCache->Draw(item, this, iconFrame.LeftTop(),
 					kNormalIcon, B_MINI_ICON);
-					
+
 			resolvedItem.SetTo(item->EntryRef());
 		}
 
@@ -1407,7 +1407,7 @@ TContentsMenu::Draw(BRect updateRect)
 			name = volumeName;
 		} else if (item->IsSymLink()) {
 			//	use the items symlink name
-			name = item->EntryRef()->name;			
+			name = item->EntryRef()->name;
 		} else if (resolvedItem.Name() && resolvedItem.Name()[0] != '\0')
 			//	use the items actual name
 			name = resolvedItem.Name();
@@ -1423,7 +1423,7 @@ TContentsMenu::Draw(BRect updateRect)
 		MovePenTo(textFrame.LeftBottom());
 		DrawString(truncatedString.String());
 	}
-	
+
 	PopState();
 }
 
@@ -1446,7 +1446,7 @@ TContentsMenu::InvalidateAbsoluteItem(int32 index)
 }
 
 
-void 
+void
 TContentsMenu::KeyDown(const char *bytes, int32 numBytes)
 {
 	if (IsEnabled() && IsFocus() && Window()->IsActive()) {
@@ -1503,7 +1503,7 @@ TContentsMenu::KeyDown(const char *bytes, int32 numBytes)
 }
 
 
-void 
+void
 TContentsMenu::MessageReceived(BMessage *message)
 {
 	if (message->WasDropped()) {
@@ -1520,7 +1520,7 @@ TContentsMenu::MessageReceived(BMessage *message)
 				window->AddRefs(message);
 		}
 	}
-	
+
 	switch (message->what) {
 		//	node monitor of be menu directory
 		case B_NODE_MONITOR:
@@ -1538,13 +1538,13 @@ TContentsMenu::MessageReceived(BMessage *message)
 				FillMenu(&fStartRef);
 				Select(&ref);
 					// checks for invalid ref
-				Invalidate();			
+				Invalidate();
 
 				// 	ask the window to update the buttons
 				Window()->PostMessage(kItemSelected);
 			}
 			break;
-			
+
 		//	down button
 		case kScrollUp:
 #ifdef ITEM_EDIT
@@ -1560,24 +1560,24 @@ TContentsMenu::MessageReceived(BMessage *message)
 #endif
 			Scroll(false);
 			break;
-			
+
 		default:
 			BControl::MessageReceived(message);
 			break;
-	}	
+	}
 }
 
 
-void 
+void
 TContentsMenu::MouseDown(BPoint where)
 {
 #ifdef ITEM_EDIT
 	StopItemEdit();
 #endif
-			
+
 	bigtime_t clicktime;
 	get_click_speed(&clicktime);
-	
+
 	bigtime_t diff = system_time() - fInitialClickTime;
 	if (diff < clicktime && fInitialClickRect.Contains(where)) {
 		OpenItem(Value());
@@ -1606,17 +1606,17 @@ void
 TContentsMenu::StopTracking()
 {
 	if (IsTracking())
-		SetTracking(false);		
+		SetTracking(false);
 }
 
 
-void 
+void
 TContentsMenu::MouseUp(BPoint where)
 {
 	StopTracking();
 #ifdef ITEM_EDIT
 	BeginItemEdit(where);
-#endif	
+#endif
 	BControl::MouseUp(where);
 }
 
@@ -1627,9 +1627,9 @@ TContentsMenu::BeginItemEdit(BPoint where)
 {
 	bigtime_t clicktime;
 	get_click_speed(&clicktime);
-	
+
 	bigtime_t diff = system_time() - fInitialClickTime;
-	
+
 	if (where == fInitialClickLoc && (diff > clicktime)) {
 		BRect iconFrame, textFrame, itemFrame;
 
@@ -1642,12 +1642,12 @@ TContentsMenu::BeginItemEdit(BPoint where)
 			fEditingItem = true;
 
 			delete fEditingFld;
-			
+
 			BRect trect(textFrame);
 			trect.OffsetTo(0, 0);
 			fEditingFld = new BTextView(textFrame, "edit", trect, B_FOLLOW_NONE);
 			AddChild(fEditingFld);
-			fEditingFld->SetViewColor(fHiliteColor);			
+			fEditingFld->SetViewColor(fHiliteColor);
 
 			fEditingFld->SetText(ItemAt(fItemIndex)->EntryRef()->name);
 			fEditingFld->SelectAll();
@@ -1666,13 +1666,13 @@ TContentsMenu::StopItemEdit()
 		if (fItemIndex > -1) {
 			const char *name = fEditingFld->Text();
 			const entry_ref *ref = ItemAt(fItemIndex)->EntryRef();
-			if (strcmp(ref->name, name) != 0) {							
+			if (strcmp(ref->name, name) != 0) {
 				BEntry entry(ref);
 				if (entry.InitCheck() == B_OK && entry.Exists())
 					entry.Rename(name);
 			}
 		}
-		
+
 		// dispose the textview
 		if (fEditingFld) {
 			fEditingFld->RemoveSelf();
@@ -1680,13 +1680,13 @@ TContentsMenu::StopItemEdit()
 			fEditingFld = NULL;
 			fEditingItem = false;
 			fItemIndex = -1;
-		}	
+		}
 	}
 }
 #endif
 
 
-void 
+void
 TContentsMenu::MouseMoved(BPoint where, uint32 code, const BMessage *message)
 {
 	switch (code) {
@@ -1703,21 +1703,21 @@ TContentsMenu::MouseMoved(BPoint where, uint32 code, const BMessage *message)
 			}
 #endif
 			break;
-			
+
 		case B_INSIDE_VIEW:
-			if (IsTracking()) 
+			if (IsTracking())
 				SelectItemAt(where);
 			break;
-			
+
 		case B_EXITED_VIEW:
 			break;
-			
+
 	}
 	BControl::MouseMoved(where, code, message);
 }
 
 
-void 
+void
 TContentsMenu::GetPreferredSize(float *width, float *height)
 {
 	//	width should accomodate border, left gap, icon, separation, text, border
@@ -1733,7 +1733,7 @@ TContentsMenu::GetPreferredSize(float *width, float *height)
 }
 
 
-void 
+void
 TContentsMenu::ResizeToPreferred()
 {
 	float width, height;
@@ -1751,7 +1751,7 @@ TContentsMenu::SetStartRef(const entry_ref *ref)
 		entry.GetNodeRef(&nref);
 		watch_node(&nref, B_STOP_WATCHING, this, Window());
 	}
-		
+
 	fStartRef = *ref;
 	entry.SetTo(&fStartRef);
 	entry.GetNodeRef(&nref);
@@ -1783,9 +1783,9 @@ TContentsMenu::Scroll(bool direction)
 	int32 count = fContentsList->CountItems();
 	if (count <= kMaxItemCount)
 		return;
-		
+
 	bool needtoupdate = false;
-	if (direction && fDownBtn->IsEnabled()) {			//	down 
+	if (direction && fDownBtn->IsEnabled()) {			//	down
 		if ((count - fFirstItem) > kMaxItemCount) {
 			fFirstItem++;
 			needtoupdate = true;
@@ -1826,7 +1826,7 @@ TContentsMenu::FillMenu(const entry_ref *ref)
 {
 	if (!fContentsList)
 		fContentsList = new BObjectList<Model>(kMaxItemCount);
-		
+
 	BEntry entry(ref);
 	if (entry.InitCheck() == B_OK && entry.Exists()) {
 		BDirectory dir(ref);
@@ -1840,13 +1840,13 @@ TContentsMenu::FillMenu(const entry_ref *ref)
 
 		fContentsList->SortItems(CompareOne);
 	}
-	
+
 	int32 count = fContentsList->CountItems();
 	if (count <= kMaxItemCount)
 		fFirstItem = 0;
 	else if (count - fFirstItem < kMaxItemCount)
 		fFirstItem = count - kMaxItemCount;
-		
+
 	UpdateScrollers();
 }
 
@@ -1856,7 +1856,7 @@ TContentsMenu::EmptyMenu()
 {
 	if (!fContentsList)
 		return;
-		
+
 	int32 count = fContentsList->CountItems()-1;
 	for (int32 index = count ; index >= 0 ; index--) {
 		Model *item = fContentsList->ItemAt(index);
@@ -1876,23 +1876,23 @@ TContentsMenu::ItemFrame(int32 index, BRect *iconFrame, BRect *textFrame,
 {
 	if (index >= kMaxItemCount || index < 0)
 		return false;
-	
+
 	float halfheight = fItemHeight / 2;
 	float halficon = B_MINI_ICON / 2;
 	float halffont = fFontHeight / 2;
 	BPoint loc;
 	loc.x = kLeftGutter;
 	loc.y = fUpBtn->Frame().bottom + 1 + halfheight;
-	
+
 	loc.y += index * fItemHeight;
 
 	iconFrame->Set(loc.x, loc.y - halficon, loc.x + B_MINI_ICON, loc.y + halficon);
 
 	textFrame->Set(loc.x + B_MINI_ICON + kItemGap, loc.y - halffont,
 		Bounds().right - 2, loc.y + halffont);
-		
+
 	itemFrame->Set(2, loc.y - halfheight, Bounds().Width() - 2, loc.y + halfheight - 1);
-	
+
 	return true;
 }
 
@@ -1904,12 +1904,12 @@ TContentsMenu::ItemAt(BPoint where, BRect *iconFrame, BRect *textFrame,
 	BRect *itemFrame)
 {
 	int32 count = fContentsList->CountItems();
-	count = (count < kMaxItemCount) ? count : kMaxItemCount;	
+	count = (count < kMaxItemCount) ? count : kMaxItemCount;
 	for (int32 index = 0 ; index < count ; index++)
 		if (ItemFrame(index, iconFrame, textFrame, itemFrame)
-			&& itemFrame->Contains(where)) 
+			&& itemFrame->Contains(where))
 			return index;
-	
+
 	return -1;
 }
 
@@ -1988,7 +1988,7 @@ TContentsMenu::OpenItem(int32 index)
 					fDoubleClickMessage->ReplaceRef("current", item->EntryRef());
 				else
 					fDoubleClickMessage->AddRef("current", item->EntryRef());
-										
+
 				Invoke(fDoubleClickMessage);
 			}
 		}
@@ -2036,10 +2036,10 @@ TContentsMenu::RemoveItem(int32 index)
 
 	//	index out of bounds
 	if (index < 0 || index > count)
-		return;	
+		return;
 
 	RemoveEntries(ItemAt(index)->EntryRef());
-		
+
 	//	index was last item
 	if (index == count) {
 		SetValue(index - 1);
@@ -2072,26 +2072,26 @@ TScrollerButton::TScrollerButton(BRect frame, BMessage *message, bool direction)
 }
 
 
-void 
+void
 TScrollerButton::AttachedToWindow()
 {
 	BControl::AttachedToWindow();
-	
+
 	menu_info minfo;
 	get_menu_info(&minfo);
 	fSelectedColor = tint_color(minfo.background_color, B_DARKEN_2_TINT);
-	
+
 	SetViewColor(minfo.background_color);
 
 	fHiliteFrame = Bounds();
-	if (fDirection) 
+	if (fDirection)
 		fHiliteFrame.bottom -= 6;
-	else 
+	else
 		fHiliteFrame.top += 4;
 }
 
 
-void 
+void
 TScrollerButton::DetachedFromWindow()
 {
 	delete fTicker;
@@ -2099,12 +2099,12 @@ TScrollerButton::DetachedFromWindow()
 }
 
 
-void 
+void
 TScrollerButton::Draw(BRect)
 {
-	
+
 	PushState();
-	
+
 	if (Value() == 0 || !IsEnabled()) {
 		SetLowColor(ViewColor());
 		SetHighColor(ViewColor());
@@ -2120,13 +2120,13 @@ TScrollerButton::Draw(BRect)
 		SetHighColor(kMediumGray);
 	else
 		SetHighColor(tint_color(kMediumGray, B_LIGHTEN_1_TINT));
-	
-	float width = Bounds().Width();	
+
+	float width = Bounds().Width();
 	int32 linecount = Bounds().IntegerHeight() - 9;
 
 	BPoint start(width / 2, fDirection ? 2 : Bounds().Height()-2);
 	BPoint finish(start);
-	
+
 	for (int32 index = 0 ; index < linecount ; index++) {
 		StrokeLine(start, finish);
 		--start.x;
@@ -2139,7 +2139,7 @@ TScrollerButton::Draw(BRect)
 			--finish.y;
 		}
 	}
-	
+
 	//	add the top/bottom delimiter
 	SetHighColor(kLightGray);
 	float y = fDirection ? start.y + 2 : start.y - 3;
@@ -2147,12 +2147,12 @@ TScrollerButton::Draw(BRect)
 	SetHighColor(kAlmostWhite);
 	y = fDirection ? start.y + 3 : start.y - 2;
 	StrokeLine(BPoint(0, y), BPoint(width, y));
-	
+
 	PopState();
 }
 
 
-void 
+void
 TScrollerButton::MouseDown(BPoint where)
 {
 	if (IsEnabled() && fHiliteFrame.Contains(where)) {
@@ -2165,7 +2165,7 @@ TScrollerButton::MouseDown(BPoint where)
 }
 
 
-void 
+void
 TScrollerButton::MouseUp(BPoint)
 {
 	SetValue(0);
@@ -2176,7 +2176,7 @@ TScrollerButton::MouseUp(BPoint)
 }
 
 
-void 
+void
 TScrollerButton::MouseMoved(BPoint where, uint32 code, const BMessage *message)
 {
 	switch (code) {
@@ -2205,11 +2205,11 @@ TScrollerButton::MouseMoved(BPoint where, uint32 code, const BMessage *message)
 
 const char *kNewItemNameLabel = "New item name:";
 
-const int32 kPanelWidth = 260; 
+const int32 kPanelWidth = 260;
 const int32 kPanelHeight = 77;
 
 NameItemPanel::NameItemPanel(BWindow *parent, const char *initialtext)
-	:	BWindow(BRect(0, 0, kPanelWidth, kPanelHeight), "", B_MODAL_WINDOW,  
+	:	BWindow(BRect(0, 0, kPanelWidth, kPanelHeight), "", B_MODAL_WINDOW,
 			B_NOT_RESIZABLE | B_NOT_ZOOMABLE | B_NOT_CLOSABLE),
 		fParent(parent)
 {
@@ -2220,7 +2220,7 @@ NameItemPanel::NameItemPanel(BWindow *parent, const char *initialtext)
 	ResizeTo(Bounds().Width(), fCancelBtn->Frame().bottom + 10);
 	Unlock();
 	CenterWindowOnScreen(this);
-} 
+}
 
 
 NameItemPanel::~NameItemPanel()
@@ -2228,15 +2228,15 @@ NameItemPanel::~NameItemPanel()
 }
 
 
-void 
-NameItemPanel::MessageReceived(BMessage *message) 
+void
+NameItemPanel::MessageReceived(BMessage *message)
 {
 	switch (message->what){
 		case 'done':
 			{
 				const char *text = fNameFld->Text();
 				if (!text || text[0] == '\0'){
-					if ((new BAlert("", "The new name is empty, please enter a name", 
+					if ((new BAlert("", "The new name is empty, please enter a name",
 						"Cancel", "OK", NULL, B_WIDTH_AS_USUAL))->Go() == 0)
 						return;
 				}
@@ -2246,12 +2246,12 @@ NameItemPanel::MessageReceived(BMessage *message)
 				PostMessage(B_QUIT_REQUESTED);
 			}
 			break;
-	
+
 		case 'canc':
 			fParent->PostMessage('canc');
 			PostMessage(B_QUIT_REQUESTED);
 			break;
-	
+
 		default:
 			BWindow::MessageReceived(message);
 			break;
@@ -2259,12 +2259,12 @@ NameItemPanel::MessageReceived(BMessage *message)
 }
 
 
-void 
-NameItemPanel::AddParts(const char *initialtext) 
+void
+NameItemPanel::AddParts(const char *initialtext)
 {
 	fBG = new BBox(Bounds(), "bg", B_FOLLOW_ALL, B_WILL_DRAW, B_NO_BORDER);
 	AddChild(fBG);
-	
+
 	BRect rect(10, 10, Bounds().Width()-10, 11);
 	fNameFld = new BTextControl(rect, "", kNewItemNameLabel, "", NULL);
 	fBG->AddChild(fNameFld);
@@ -2277,19 +2277,19 @@ NameItemPanel::AddParts(const char *initialtext)
 	BTextView *textView = fNameFld->TextView();
 	if (textView)
 		textView->SetMaxBytes(32);
-	
+
 	rect.right = Bounds().Width() - 10;
 	rect.left = rect.right - 75;
 	rect.top = fNameFld->Frame().bottom + 10;
 	rect.bottom = rect.top + 1;
 	fDoneBtn = new BButton(rect, "", "Change", new BMessage('done'),
 		B_FOLLOW_TOP | B_FOLLOW_RIGHT);
-	
+
 	rect.right = rect.left - 10;
 	rect.left = rect.right - 75;
 	fCancelBtn = new BButton(rect, "", "Cancel", new BMessage('canc'),
 		B_FOLLOW_TOP | B_FOLLOW_RIGHT);
-	fBG->AddChild(fCancelBtn);	
+	fBG->AddChild(fCancelBtn);
 
 	fBG->AddChild(fDoneBtn);
 	SetDefaultButton(fDoneBtn);

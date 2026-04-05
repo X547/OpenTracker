@@ -63,10 +63,10 @@ All rights reserved.
 class BRefFilter;
 class BList;
 
-// TODO: Get rid of this.
-class _BWidthBuffer_;
-
 namespace BPrivate {
+
+// TODO: Get rid of this.
+class WidthBuffer;
 
 class BCountView;
 class BContainerWindow;
@@ -298,7 +298,7 @@ class BPoseView : public BView {
 		bool FrameForPose(BPose *targetpose, bool convert, BRect *poseRect);
 		bool CreateSymlinkPoseTarget(Model *symlink);
 			// used to complete a symlink pose; returns true if
-			// target symlink should not be shown	
+			// target symlink should not be shown
 		void ResetPosePlacementHint();
 		void PlaceFolder(const entry_ref *, const BMessage *);
 
@@ -392,7 +392,7 @@ class BPoseView : public BView {
 
 		// scripting handlers
 		virtual bool HandleScriptingMessage(BMessage *message);
-		bool SetProperty(BMessage *message, BMessage *specifier, int32 form, 
+		bool SetProperty(BMessage *message, BMessage *specifier, int32 form,
 			const char *property, BMessage *reply);
 		bool GetProperty(BMessage *, int32, const char *, BMessage *);
 		bool CreateProperty(BMessage *message, BMessage *specifier, int32,
@@ -542,7 +542,7 @@ class BPoseView : public BView {
 		void HandleAutoScroll();
 		bool CheckAutoScroll(BPoint mouseLoc, bool shouldScroll, bool selectionScrolling = false);
 
-		// view extent handling	
+		// view extent handling
 		void RecalcExtent();
 		void AddToExtent(const BRect &);
 		void ClearExtent();
@@ -657,7 +657,7 @@ class BPoseView : public BView {
 			// used for typeahead - should be replaced by a typeahead state
 
 		// TODO: Get rid of this.
-		static _BWidthBuffer_ *fWidthBuf;
+		static WidthBuffer *fWidthBuf;
 
 		static OffscreenBitmap *fOffscreen;
 
@@ -750,7 +750,7 @@ BPoseView::VScrollBar() const
 inline bool
 BPoseView::StateNeedsSaving()
 {
-	return fStateNeedsSaving || fViewState->StateNeedsSaving();	
+	return fStateNeedsSaving || fViewState->StateNeedsSaving();
 }
 
 inline uint32
@@ -802,25 +802,25 @@ BPoseView::IsDesktopView() const
 }
 
 inline uint32
-BPoseView::PrimarySort() const 
+BPoseView::PrimarySort() const
 {
 	return fViewState->PrimarySort();
 }
 
 inline uint32
-BPoseView::PrimarySortType() const 
+BPoseView::PrimarySortType() const
 {
 	return fViewState->PrimarySortType();
 }
 
 inline uint32
-BPoseView::SecondarySort() const 
+BPoseView::SecondarySort() const
 {
 	return fViewState->SecondarySort();
 }
 
 inline uint32
-BPoseView::SecondarySortType() const 
+BPoseView::SecondarySortType() const
 {
 	return fViewState->SecondarySortType();
 }
@@ -970,7 +970,7 @@ BPoseView::SetRefFilter(BRefFilter *filter)
 }
 
 inline BRefFilter *
-BPoseView::RefFilter() const	
+BPoseView::RefFilter() const
 {
 	return fRefFilter;
 }

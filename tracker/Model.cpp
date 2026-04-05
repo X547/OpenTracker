@@ -76,11 +76,20 @@ BObjectList<Model> *readOnlyOpenModelList = NULL;
 #endif
 
 namespace BPrivate {
+
+#if 0
 extern
 #if !B_BEOS_VERSION_DANO
 _IMPEXP_BE
 #endif
 bool CheckNodeIconHintPrivate(const BNode *, bool);
+#else
+static bool CheckNodeIconHintPrivate(const BNode *, bool)
+{
+	return false;
+}
+#endif
+
 }
 
 
@@ -108,7 +117,7 @@ Model::Model(const Model &cloneThis)
 {
 	fStatBuf.st_dev = cloneThis.NodeRef()->device;
 	fStatBuf.st_ino = cloneThis.NodeRef()->node;
-	
+
 	if (cloneThis.IsSymLink() && cloneThis.LinkTo())
 		fLinkTo = new Model(*cloneThis.LinkTo());
 
@@ -160,7 +169,7 @@ Model::Model(const entry_ref *ref, bool traverse, bool open, bool writable)
 }
 
 
-void 
+void
 Model::DeletePreferredAppVolumeNameLinkTo()
 {
 	if (IsSymLink()) {
@@ -181,9 +190,9 @@ Model::DeletePreferredAppVolumeNameLinkTo()
 Model::~Model()
 {
 #ifdef CHECK_OPEN_MODEL_LEAKS
-	if (writableOpenModelList) 
+	if (writableOpenModelList)
 		writableOpenModelList->RemoveItem(this);
-	if (readOnlyOpenModelList) 
+	if (readOnlyOpenModelList)
 		readOnlyOpenModelList->RemoveItem(this);
 #endif
 
@@ -201,7 +210,7 @@ Model::~Model()
 }
 
 
-status_t 
+status_t
 Model::SetTo(const BEntry *entry, bool open, bool writable)
 {
 	delete fNode;
@@ -214,20 +223,20 @@ Model::SetTo(const BEntry *entry, bool open, bool writable)
 	fStatus = entry->GetRef(&fEntryRef);
 	if (fStatus != B_OK)
 		return fStatus;
-	
+
 	fStatus = entry->GetStat(&fStatBuf);
 	if (fStatus != B_OK)
 		return fStatus;
-	
+
 	fStatus = OpenNode(writable);
 	if (!open)
 		CloseNode();
-	
+
 	return fStatus;
 }
 
 
-status_t 
+status_t
 Model::SetTo(const entry_ref *newRef, bool traverse, bool open, bool writable)
 {
 	delete fNode;
@@ -250,16 +259,16 @@ Model::SetTo(const entry_ref *newRef, bool traverse, bool open, bool writable)
 	fStatus = tmpEntry.GetStat(&fStatBuf);
 	if (fStatus != B_OK)
 		return fStatus;
-	
+
 	fStatus = OpenNode(writable);
 	if (!open)
 		CloseNode();
-	
+
 	return fStatus;
 }
 
 
-status_t 
+status_t
 Model::SetTo(const node_ref *dirNode, const node_ref *nodeRef, const char *name,
 	bool open, bool writable)
 {
@@ -280,7 +289,7 @@ Model::SetTo(const node_ref *dirNode, const node_ref *nodeRef, const char *name,
 	fStatus = tmpNode.InitCheck();
 	if (fStatus != B_OK)
 		return fStatus;
-	
+
 	fStatus = tmpNode.GetStat(&fStatBuf);
 	if (fStatus != B_OK)
 		return fStatus;
@@ -289,12 +298,12 @@ Model::SetTo(const node_ref *dirNode, const node_ref *nodeRef, const char *name,
 
 	if (!open)
 		CloseNode();
-	
+
 	return fStatus;
 }
 
 
-status_t 
+status_t
 Model::InitCheck() const
 {
 	return fStatus;
@@ -341,29 +350,29 @@ Model::Name() const
 }
 
 
-status_t 
+status_t
 Model::OpenNode(bool writable)
 {
 	if (IsNodeOpen() && (writable == IsNodeOpenForWriting()))
 		return B_OK;
-	
+
 	OpenNodeCommon(writable);
 	return fStatus;
 }
 
 
-status_t 
+status_t
 Model::UpdateStatAndOpenNode(bool writable)
 {
 	if (IsNodeOpen() && (writable == IsNodeOpenForWriting()))
 		return B_OK;
-	
+
 	// try reading the stat structure again
 	BEntry tmpEntry(&fEntryRef);
 	fStatus = tmpEntry.InitCheck();
 	if (fStatus != B_OK)
 		return fStatus;
-	
+
 	fStatus = tmpEntry.GetStat(&fStatBuf);
 	if (fStatus != B_OK)
 		return fStatus;
@@ -381,9 +390,9 @@ Model::OpenNodeCommon(bool writable)
 #endif
 
 #ifdef CHECK_OPEN_MODEL_LEAKS
-	if (writableOpenModelList) 
+	if (writableOpenModelList)
 		writableOpenModelList->RemoveItem(this);
-	if (readOnlyOpenModelList) 
+	if (readOnlyOpenModelList)
 		readOnlyOpenModelList->RemoveItem(this);
 #endif
 
@@ -466,7 +475,7 @@ Model::OpenNodeCommon(bool writable)
 }
 
 
-void 
+void
 Model::CloseNode()
 {
 #if xDEBUG
@@ -474,9 +483,9 @@ Model::CloseNode()
 #endif
 
 #ifdef CHECK_OPEN_MODEL_LEAKS
-	if (writableOpenModelList) 
+	if (writableOpenModelList)
 		writableOpenModelList->RemoveItem(this);
-	if (readOnlyOpenModelList) 
+	if (readOnlyOpenModelList)
 		readOnlyOpenModelList->RemoveItem(this);
 #endif
 
@@ -485,7 +494,7 @@ Model::CloseNode()
 }
 
 
-bool 
+bool
 Model::IsNodeOpen() const
 {
 	return fNode != NULL;
@@ -493,7 +502,7 @@ Model::IsNodeOpen() const
 
 
 
-bool 
+bool
 Model::IsNodeOpenForWriting() const
 {
 	return fNode != NULL && fWritable;
@@ -511,10 +520,10 @@ Model::SetupBaseType()
 
 		case S_IFREG:
 			// regular file
-			if (fStatBuf.st_mode & S_IXUSR) 
+			if (fStatBuf.st_mode & S_IXUSR)
 				// executable
 				fBaseType = kExecutableNode;
-			else 
+			else
 				// non-executable
 				fBaseType = kPlainNode;
 			break;
@@ -572,7 +581,7 @@ Model::FinishSettingUpType()
 					DeletePreferredAppVolumeNameLinkTo();
 
 				if (mimeString[0])
-					fPreferredAppName = strdup(mimeString); 
+					fPreferredAppName = strdup(mimeString);
 			}
 		}
 	}
@@ -640,7 +649,7 @@ Model::FinishSettingUpType()
 						DeletePreferredAppVolumeNameLinkTo();
 
 					if (signature[0])
-						fPreferredAppName = strdup(signature); 
+						fPreferredAppName = strdup(signature);
 				}
 			}
 			if (!fMimeType.Length())
@@ -655,7 +664,7 @@ Model::FinishSettingUpType()
 }
 
 
-void 
+void
 Model::ResetIconFrom()
 {
 	BModelOpener opener(this);
@@ -688,7 +697,7 @@ Model::PreferredAppSignature() const
 }
 
 
-void 
+void
 Model::SetPreferredAppSignature(const char *signature)
 {
 	ASSERT(!IsVolume() && !IsSymLink());
@@ -729,7 +738,7 @@ Model::ResolveIfLink()
 }
 
 
-void 
+void
 Model::SetLinkTo(Model *model)
 {
 	ASSERT(IsSymLink());
@@ -741,7 +750,7 @@ Model::SetLinkTo(Model *model)
 }
 
 
-void 
+void
 Model::GetPreferredAppForBrokenSymLink(BString &result)
 {
 	if (!IsSymLink() || LinkTo()) {
@@ -750,7 +759,7 @@ Model::GetPreferredAppForBrokenSymLink(BString &result)
 	}
 
 	BModelOpener opener(this);
-	BNodeInfo info(fNode);		
+	BNodeInfo info(fNode);
 	status_t error = info.GetPreferredApp(result.LockBuffer(B_MIME_TYPE_LENGTH));
 	result.UnlockBuffer();
 
@@ -768,7 +777,7 @@ Model::UpdateEntryRef(const node_ref *dirNode, const char *name)
 	if (IsVolume()) {
 		if (fVolumeName)
 			DeletePreferredAppVolumeNameLinkTo();
-	
+
 		fVolumeName = strdup(name);
 	}
 
@@ -782,11 +791,11 @@ Model::UpdateEntryRef(const node_ref *dirNode, const char *name)
 }
 
 
-status_t 
+status_t
 Model::WatchVolumeAndMountPoint(uint32 , BHandler *target)
 {
 	ASSERT(IsVolume());
-	
+
 	if (fEntryRef.name && fVolumeName
 		&& strcmp(fEntryRef.name, "boot") == 0) {
 		// watch mount point for boot volume
@@ -804,7 +813,7 @@ Model::WatchVolumeAndMountPoint(uint32 , BHandler *target)
 }
 
 
-bool 
+bool
 Model::AttrChanged(const char *attrName)
 {
 	// called on an attribute changed node monitor
@@ -814,7 +823,7 @@ Model::AttrChanged(const char *attrName)
 	ASSERT(IsNodeOpen());
 	if (attrName
 		&& (strcmp(attrName, kAttrMiniIcon) == 0
-			|| strcmp(attrName, kAttrLargeIcon) == 0)) 
+			|| strcmp(attrName, kAttrLargeIcon) == 0))
 		return true;
 
 	if (!attrName
@@ -826,7 +835,7 @@ Model::AttrChanged(const char *attrName)
 			fMimeType = "";
 		else {
 			// node has a specific mime type
-			fMimeType = mimeString;				
+			fMimeType = mimeString;
 			if (!IsVolume()
 				&& !IsSymLink()
 				&& info.GetPreferredApp(mimeString) == B_OK)
@@ -851,7 +860,7 @@ Model::AttrChanged(const char *attrName)
 }
 
 
-bool 
+bool
 Model::StatChanged()
 {
 	ASSERT(IsNodeOpen());
@@ -911,22 +920,22 @@ Model::IsDropTarget(const Model *forDocument, bool traverse) const
 }
 
 
-Model::CanHandleResult 
+Model::CanHandleResult
 Model::CanHandleDrops() const
 {
 	if (IsDirectory())
 		// directories take anything
-		// resolve permissions here 
+		// resolve permissions here
 		return kCanHandle;
-		
-		
+
+
 	if (IsSymLink()) {
 		// descend into symlink and try again on it's target
 
 		BEntry entry(&fEntryRef, true);
 		if (entry.InitCheck() != B_OK)
 			return kCannotHandle;
-		
+
 		if (entry == BEntry(EntryRef()))
 			// self-referencing link, avoid infinite recursion
 			return kCannotHandle;
@@ -937,7 +946,7 @@ Model::CanHandleDrops() const
 
 		return model.CanHandleDrops();
 	}
-	
+
 	if (IsExecutable())
 		return kNeedToCheckType;
 
@@ -968,7 +977,7 @@ MatchMimeTypeString(/*const */BString *documentType, const char *handlerType)
 
 	int32 supertypeOnlyLength = 0;
 	const char *tmp = strstr(handlerType, "/");
-	
+
 	if (!tmp)
 		// no subtype - supertype string only
 		supertypeOnlyLength = (int32)strlen(handlerType);
@@ -983,7 +992,7 @@ MatchMimeTypeString(/*const */BString *documentType, const char *handlerType)
 				return kDontMatch;
 		}
 	}
-	
+
 	if (documentType->ICompare(handlerType) == 0)
 		return kMatch;
 
@@ -991,7 +1000,7 @@ MatchMimeTypeString(/*const */BString *documentType, const char *handlerType)
 }
 
 
-int32 
+int32
 Model::SupportsMimeType(const char *type, const BObjectList<BString> *list,
 	bool exactReason) const
 {
@@ -999,32 +1008,32 @@ Model::SupportsMimeType(const char *type, const BObjectList<BString> *list,
 		// pass in one or the other
 
 	int32 result = kDoesNotSupportType;
-		
+
 	BFile file(EntryRef(), O_RDONLY);
 	BAppFileInfo handlerInfo(&file);
 
 	BMessage message;
-	if (handlerInfo.GetSupportedTypes(&message) != B_OK) 
+	if (handlerInfo.GetSupportedTypes(&message) != B_OK)
 		return kDoesNotSupportType;
 
 	for (int32 index = 0; ; index++) {
 
 		// check if this model lists the type of dropped document as supported
 		const char *mimeSignature;
-		int32 bufferLength;
+		ssize_t bufferLength;
 
 		if (message.FindData("types", 'CSTR', index, (const void **)&mimeSignature,
-			&bufferLength)) 
+			&bufferLength))
 			return result;
 
 		if (IsSuperHandlerSignature(mimeSignature)) {
-			if (!exactReason) 
+			if (!exactReason)
 				return kSuperhandlerModel;
 
-			if (result == kDoesNotSupportType) 
+			if (result == kDoesNotSupportType)
 				result = kSuperhandlerModel;
 		}
-		
+
 		int32 match;
 
 		if (type) {
@@ -1034,12 +1043,12 @@ Model::SupportsMimeType(const char *type, const BObjectList<BString> *list,
 			match = WhileEachListItem(const_cast<BObjectList<BString> *>(list),
 				MatchMimeTypeString, mimeSignature);
 				// const_cast shouldnt be here, have to have it until MW cleans up
-		
-		if (match == kMatch) 
+
+		if (match == kMatch)
 			// supports the actual type, it can't get any better
 			return kModelSupportsType;
 		else if (match == kMatchSupertype) {
-			if (!exactReason) 
+			if (!exactReason)
 				return kModelSupportsSupertype;
 
 			// we already know this model supports the file as a supertype,
@@ -1052,7 +1061,7 @@ Model::SupportsMimeType(const char *type, const BObjectList<BString> *list,
 }
 
 
-bool 
+bool
 Model::IsDropTargetForList(const BObjectList<BString> *list) const
 {
 	switch (CanHandleDrops()) {
@@ -1061,7 +1070,7 @@ Model::IsDropTargetForList(const BObjectList<BString> *list) const
 
 		case kCannotHandle:
 			return false;
-		
+
 		default:
 			break;
 	}
@@ -1069,7 +1078,7 @@ Model::IsDropTargetForList(const BObjectList<BString> *list) const
 }
 
 
-bool 
+bool
 Model::IsSuperHandler() const
 {
 	ASSERT(CanHandleDrops() == kNeedToCheckType);
@@ -1083,7 +1092,7 @@ Model::IsSuperHandler() const
 
 	for (int32 index = 0; ; index++) {
 		const char *mimeSignature;
-		int32 bufferLength;
+		ssize_t bufferLength;
 
 		if (message.FindData("types", 'CSTR', index, (const void **)&mimeSignature,
 			&bufferLength))
@@ -1096,14 +1105,14 @@ Model::IsSuperHandler() const
 }
 
 
-void 
+void
 Model::GetEntry(BEntry *entry) const
 {
 	entry->SetTo(EntryRef());
 }
 
 
-void 
+void
 Model::GetPath(BPath *path) const
 {
 	BEntry entry(EntryRef());
@@ -1111,7 +1120,7 @@ Model::GetPath(BPath *path) const
 }
 
 
-bool 
+bool
 Model::Mimeset(bool force)
 {
 	BString oldType = MimeType();
@@ -1133,12 +1142,12 @@ Model::Mimeset(bool force)
 }
 
 
-ssize_t 
+ssize_t
 Model::WriteAttr(const char *attr, type_code type, off_t offset,
 	const void *buffer, size_t length)
 {
 	BModelWriteOpener opener(this);
-	if (!fNode) 
+	if (!fNode)
 		return 0;
 
 	ssize_t result = fNode->WriteAttr(attr, type, offset, buffer, length);
@@ -1146,14 +1155,14 @@ Model::WriteAttr(const char *attr, type_code type, off_t offset,
 }
 
 
-ssize_t 
+ssize_t
 Model::WriteAttrKillForegin(const char *attr, const char *foreignAttr,
 	type_code type, off_t offset, const void *buffer, size_t length)
 {
 	BModelWriteOpener opener(this);
-	if (!fNode) 
+	if (!fNode)
 		return 0;
-	
+
 	ssize_t result = fNode->WriteAttr(attr, type, offset, buffer, length);
 	if (result == (ssize_t)length)
 		// nuke attribute in opposite endianness
@@ -1162,7 +1171,7 @@ Model::WriteAttrKillForegin(const char *attr, const char *foreignAttr,
 }
 
 
-status_t 
+status_t
 Model::GetLongVersionString(BString &result, version_kind kind)
 {
 	BFile file(EntryRef(), O_RDONLY);
@@ -1184,7 +1193,7 @@ Model::GetLongVersionString(BString &result, version_kind kind)
 	return B_OK;
 }
 
-status_t 
+status_t
 Model::GetVersionString(BString &result, version_kind kind)
 {
 	BFile file(EntryRef(), O_RDONLY);

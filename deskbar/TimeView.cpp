@@ -50,7 +50,7 @@ const char * const kMinString = "99:99 AM";
 static float
 FontHeight(BView *target, bool full)
 {
-	font_height fontInfo;		
+	font_height fontInfo;
 	target->GetFontHeight(&fontInfo);
 	float h = fontInfo.ascent + fontInfo.descent;
 
@@ -148,7 +148,7 @@ TTimeView::AttachedToWindow()
 	} else
 		SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 
-	fFontHeight = FontHeight(this, true);		
+	fFontHeight = FontHeight(this, true);
 	ResizeToPreferred();
 	CalculateTextPlacement();
 }
@@ -299,7 +299,7 @@ TTimeView::MouseDown(BPoint point)
 {
 	uint32 buttons;
 
-	Window()->CurrentMessage()->FindInt32("buttons", (long*) &buttons);
+	Window()->CurrentMessage()->FindInt32("buttons", (int32*) &buttons);
 	if (buttons == B_SECONDARY_MOUSE_BUTTON) {
 		ShowClockOptions(ConvertToScreen(point));
 		return;
@@ -356,7 +356,7 @@ TTimeView::Pulse()
 
 		Draw(Bounds());
 		fNeedToUpdate = false;
-	}	
+	}
 }
 
 
@@ -454,7 +454,7 @@ TTimeView::CalculateTextPlacement()
 	fDateLocation.y = fTimeLocation.y = bounds.Height()/2 + fFontHeight/2;
 }
 
-		
+
 void
 TTimeView::ShowClockOptions(BPoint point)
 {

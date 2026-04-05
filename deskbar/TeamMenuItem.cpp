@@ -85,7 +85,7 @@ TTeamMenuItem::InitData(BList *team, BBitmap *icon, char *name, char *sig,
 	SetLabel(name);
 	if (fName == NULL) {
 		char *tmp = (char *)malloc(32);
-		sprintf(tmp, "team %ld", (int32)team->ItemAt(0));
+		sprintf(tmp, "team %" B_PRId32, (int32)(addr_t)team->ItemAt(0));
 		fName = tmp;
 	}
 
@@ -130,8 +130,8 @@ TTeamMenuItem::Invoke(BMessage *message)
 		barview->DragStop();
 
 	// bring to front or minimize shortcuts
-	uint32 mods = modifiers();	
-	if (mods & B_CONTROL_KEY) 
+	uint32 mods = modifiers();
+	if (mods & B_CONTROL_KEY)
 		TShowHideMenuItem::TeamShowHideCommon((mods & B_SHIFT_KEY)
 				? B_MINIMIZE_WINDOW : B_BRING_TO_FRONT, Teams());
 
@@ -198,7 +198,7 @@ TTeamMenuItem::GetContentSize(float *width, float *height)
 	else
 		*width = kHPad + iconBounds.Width() + kLabelOffset + fLabelWidth + kHPad + 20;
 
-	if (fOverrideHeight != -1.0f) 
+	if (fOverrideHeight != -1.0f)
 		*height = fOverrideHeight;
 	else {
 		*height = iconBounds.Height();
@@ -267,7 +267,7 @@ TTeamMenuItem::Draw()
 		else
 			// dark line on the left
 			menu->StrokeLine(frame.LeftTop(), frame.LeftBottom());
-	} else 
+	} else
 		menu->SetLowColor(menuColor);
 
 	menu->MovePenTo(ContentLocation());
@@ -291,7 +291,7 @@ TTeamMenuItem::DrawContent()
 		BRect dstRect(iconBounds);
 		float extra = fVertical ? 0.0f : 1.0f;
 		BPoint contLoc = ContentLocation();
-		dstRect.OffsetTo(BPoint(contLoc.x + kHPad, contLoc.y + 
+		dstRect.OffsetTo(BPoint(contLoc.x + kHPad, contLoc.y +
 			((frame.Height() - iconBounds.Height()) / 2) + extra));
 		menu->DrawBitmapAsync(fIcon, dstRect);
 
@@ -312,7 +312,7 @@ TTeamMenuItem::DrawContent()
 		//	override the drawing of the content when the item is disabled
 		//	the wrong lowcolor is used when the item is disabled since the
 		//	text color does not change
-		DrawContentLabel();			
+		DrawContentLabel();
 	}
 
 	// Draw the expandable icon.
@@ -332,36 +332,36 @@ TTeamMenuItem::DrawContent()
 		if (!fExpanded) {
 			menu->BeginLineArray(6);
 
-			menu->AddLine(BPoint(rect.left + 3, rect.top + 1), 
+			menu->AddLine(BPoint(rect.left + 3, rect.top + 1),
 				BPoint(rect.left + 3, rect.bottom - 1), outlineColor);
-			menu->AddLine(BPoint(rect.left + 3, rect.top + 1), 
+			menu->AddLine(BPoint(rect.left + 3, rect.top + 1),
 				BPoint(rect.left + 7, rect.top + 5), outlineColor);
-			menu->AddLine(BPoint(rect.left + 7, rect.top + 5), 
+			menu->AddLine(BPoint(rect.left + 7, rect.top + 5),
 				BPoint(rect.left + 3, rect.bottom - 1), outlineColor);
 
-			menu->AddLine(BPoint(rect.left + 4, rect.top + 3), 
+			menu->AddLine(BPoint(rect.left + 4, rect.top + 3),
 				BPoint(rect.left + 4, rect.bottom - 3), middleColor);
-			menu->AddLine(BPoint(rect.left + 5, rect.top + 4), 
+			menu->AddLine(BPoint(rect.left + 5, rect.top + 4),
 				BPoint(rect.left + 5, rect.bottom - 4), middleColor);
-			menu->AddLine(BPoint(rect.left + 5, rect.top + 5), 
+			menu->AddLine(BPoint(rect.left + 5, rect.top + 5),
 				BPoint(rect.left + 6, rect.top + 5), middleColor);
 			menu->EndLineArray();
 		} else {
 			// expanded state
 
 			menu->BeginLineArray(6);
-			menu->AddLine(BPoint(rect.left + 1, rect.top + 3), 
+			menu->AddLine(BPoint(rect.left + 1, rect.top + 3),
 				BPoint(rect.right - 3, rect.top + 3), outlineColor);
-			menu->AddLine(BPoint(rect.left + 1, rect.top + 3), 
+			menu->AddLine(BPoint(rect.left + 1, rect.top + 3),
 				BPoint(rect.left + 5, rect.top + 7), outlineColor);
-			menu->AddLine(BPoint(rect.left + 5, rect.top + 7), 
+			menu->AddLine(BPoint(rect.left + 5, rect.top + 7),
 				BPoint(rect.right - 3, rect.top + 3), outlineColor);
 
-			menu->AddLine(BPoint(rect.left + 3, rect.top + 4), 
+			menu->AddLine(BPoint(rect.left + 3, rect.top + 4),
 				BPoint(rect.right - 5, rect.top + 4), middleColor);
-			menu->AddLine(BPoint(rect.left + 4, rect.top + 5), 
+			menu->AddLine(BPoint(rect.left + 4, rect.top + 5),
 				BPoint(rect.right - 6, rect.top + 5), middleColor);
-			menu->AddLine(BPoint(rect.left + 5, rect.top + 5), 
+			menu->AddLine(BPoint(rect.left + 5, rect.top + 5),
 				BPoint(rect.left + 5, rect.top + 6), middleColor);
 			menu->EndLineArray();
 		}
@@ -376,7 +376,7 @@ TTeamMenuItem::DrawContentLabel()
 	menu->MovePenBy(0, fLabelAscent);
 	menu->SetDrawingMode(B_OP_COPY);
 
-	float cachedWidth = menu->StringWidth(Label());	
+	float cachedWidth = menu->StringWidth(Label());
 	if (Submenu() && fVertical)
 		cachedWidth += 18;
 
@@ -430,7 +430,7 @@ void
 TTeamMenuItem::ToggleExpandState(bool resizeWindow)
 {
 	fExpanded = !fExpanded;
-	
+
 	if (fExpanded) {
 		// Populate Menu() with the stuff from SubMenu().
 		TWindowMenu *sub = (static_cast<TWindowMenu *>(Submenu()));
