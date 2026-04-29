@@ -66,7 +66,7 @@ class TWindowMenuItem : public BMenuItem {
 		virtual status_t Invoke(BMessage *message = NULL);
 		virtual void Draw();
 
-	private: 
+	private:
 		int32 fID;
 		bool fMini;
 		bool fCurrentWorkSpace;
@@ -120,6 +120,9 @@ struct window_info {
 	int32		window_bottom;
 	int32		show_hide_level;
 	bool		is_mini;
+
+	float		tab_height;
+	float		border_size;
 	char		name[1];
 };
 
@@ -130,7 +133,7 @@ enum window_action {
 };
 
 // from interface_misc.h
-void		do_window_action(int32 window_id, int32 action, 
+void		do_window_action(int32 window_id, int32 action,
 							 BRect zoomRect, bool zoom);
 window_info	*get_window_info(int32 a_token);
 int32		*get_token_list(team_id app, int32 *count);
